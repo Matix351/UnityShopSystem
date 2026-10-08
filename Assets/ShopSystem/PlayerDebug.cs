@@ -22,8 +22,6 @@ public class PlayerDebug : MonoBehaviour, IShopPurchaseHandler
         _shopManager.OnPurchaseCompleted += generatePurchaseLog;
        
         StateChanged += _shopManager.updatePlayerPurchaseConditions;
-
-
     }
     private void OnDisable()
     {
