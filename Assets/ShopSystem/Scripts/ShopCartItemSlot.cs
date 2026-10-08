@@ -24,10 +24,14 @@ public class ShopCartItemSlot : MonoBehaviour
 
     public void updateData(int count)
     {
+        if(count > _manager.GetMaxQuantityPerItem)
+            _item.changeCount(_manager.GetMaxQuantityPerItem);
+        else
         _item.changeCount(count);
+        
         updateCountTVs();
         _manager.OnCartItemDataChange(this);
-        
+
     }
     private void updateCountTVs()
     {
@@ -37,12 +41,12 @@ public class ShopCartItemSlot : MonoBehaviour
 
     public void increaseCountButton()
     {
-        updateData(_item.Count+1);
+        updateData(_item.Count + 1);
     }
 
-    public void decreaseCountButton() 
+    public void decreaseCountButton()
     {
-        updateData(_item.Count-1);
+        updateData(_item.Count - 1);
 
     }
 

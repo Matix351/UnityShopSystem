@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -18,7 +19,10 @@ public class ShopManager : MonoBehaviour
     //cart
     [SerializeField] private ShopCartItemSlot _cartItemSlotPrefab;
     [SerializeField] private Transform _cartItemSlotViewContent;
-
+    [SerializeField, Min(1)]
+    [Tooltip("Maximum quantity of each item in the cart, independent of inventory stack size.")]
+    private int _maxQuantityPerItem = 999;
+    public int GetMaxQuantityPerItem => _maxQuantityPerItem;
     private List<ShopCartItemSlot> _cartItemsSlots = new List<ShopCartItemSlot>();
     [SerializeField] private TextMeshProUGUI _cartPriceTV;
     [SerializeField] private TextMeshProUGUI _cartErrorBuyTV;
@@ -32,8 +36,8 @@ public class ShopManager : MonoBehaviour
     public delegate bool CanPurchaseInventorySlotsDelegate(inventorySlotData[] cartItems);
     public event CanPurchaseInventorySlotsDelegate OnCanPurchaseInventorySlotsEvent;
     //openShopEvent
-    public delegate void shopOpenEvent(bool isOpen);
-    public event shopOpenEvent OnShopOpenEvent;
+    //public delegate void shopOpenEvent(bool isOpen);
+    //public event shopOpenEvent OnShopOpenEvent;
 
     UnityAction _onShopCloseAction = null;
     private bool _canPlayerPurchase = false;
@@ -45,31 +49,28 @@ public class ShopManager : MonoBehaviour
         Debug.Log("MATI: ShopManager go");
         for(int i=0; i<items.Length; i++)
         {
-            if ( !(items[i] is IItemTradeable) )
+            if (items[i] == null || !(items[i] is IItemTradeable tradeable) )
             {
-                Debug.Log("MATI: ShopManager one of item is not IItemTradeable");
+                Debug.LogError("Shop items must be non-null and tradeable", this);
                 return;
             }
-            //if (!(items[i] is IItemType))
-            //{
-            //    Debug.Log("MATI: ShopManager one of item is not IItemType");
-            //    return;
-            //}
 
         }
         Debug.Log("MATI: ShopManager AfterCheck");
         _onShopCloseAction = onShopClosedAction;
+        clearCart();
 
-        //TODO
-        //tmp[i] = items[i] as SOShopItemExample;
-        //Create a container class for both interfaces and validate the results of the casts.
-        //A non-null result indicates a successful cast; otherwise, log an error.
-
-        //SHOP_ITEM_VIEW
+        //CLEAR_SHOP_ITEM_VIEW
         foreach (Transform child in _itemsSlotViewContent)
         {
             GameObject.Destroy(child.gameObject);
         }
+        //CLEAR_CART_ITEM_VIEW
+        foreach (Transform child in _cartItemSlotViewContent)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+
 
         _itemSlots = new ShopItemSlot[items.Length];
         HashSet<ITEM_TYPE> tags = new HashSet<ITEM_TYPE>();
@@ -79,7 +80,7 @@ public class ShopManager : MonoBehaviour
             ShopItemSlot itemSlot = Instantiate(_shopItemSlotPrefab, _itemsSlotViewContent);
             itemSlot.init(items[i], this);
 
-            tags.Add((items[i] as IItemType).Type);
+            tags.Add(itemSlot.ItemData.Type);
             
             _itemSlots[i] = itemSlot;
         }
@@ -99,11 +100,8 @@ public class ShopManager : MonoBehaviour
             tagView.init(tag, this);
         }
 
-        //carItemSlots
-        foreach (Transform child in _cartItemSlotViewContent)
-        {
-            GameObject.Destroy(child.gameObject);
-        }
+
+
 
         _cartErrorBuyTV.gameObject.SetActive(false);
         Debug.Log("MATI: ShopManager setActiveTreu");
@@ -121,9 +119,10 @@ public class ShopManager : MonoBehaviour
         clearCart();
         this.gameObject.SetActive(false);
         //OnShopOpenEvent?.Invoke(false);
-        
-        _onShopCloseAction.Invoke();
+
+        UnityAction onShopClosed = _onShopCloseAction;
         _onShopCloseAction = null;
+        onShopClosed?.Invoke();
 
     }
 
@@ -155,19 +154,35 @@ public class ShopManager : MonoBehaviour
 
     public void addToCart(ShopItem item)
     {
+        if (item == null || item.Count <= 0)
+            return;
+
         foreach(ShopCartItemSlot slot in _cartItemsSlots)
         {
             if(slot.Item.ItemSO == item.ItemSO)
             {
-                slot.updateData(item.Count + slot.Item.Count);
+                int newQuantity = item.Count + slot.Item.Count;
+                if(newQuantity >  _maxQuantityPerItem)
+                    newQuantity = _maxQuantityPerItem;
+
+                slot.updateData(newQuantity);
                 return;
             }
         }
 
+
+
+        ShopItem cartItem = new ShopItem(item);
+        if(item.Count > _maxQuantityPerItem)
+            cartItem.changeCount(_maxQuantityPerItem);
+        else
+            cartItem.changeCount(item.Count);
+
         ShopCartItemSlot itemSlot = Instantiate(_cartItemSlotPrefab, _cartItemSlotViewContent);
         _cartItemsSlots.Add(itemSlot);
-        itemSlot.init(item, this);
+        itemSlot.init(cartItem, this);
     }
+
 
     public void OnCartItemDataChange(ShopCartItemSlot cartItemSlot)
     {
@@ -181,6 +196,7 @@ public class ShopManager : MonoBehaviour
         foreach (ShopCartItemSlot slot in _cartItemsSlots)
         {
             _cartPrice += slot.Item.PriceMultiple;
+
         }
         checkCanPlayerPurchaseConditions();
         updateCartTVs();
@@ -269,6 +285,8 @@ public class ShopManager : MonoBehaviour
 
         _cartItemsSlots.Clear();
         _cartPrice = 0;
+        _canPlayerPurchase = false;
+        _cartErrorBuyTV.gameObject.SetActive(false);
         updateCartTVs();
     }
 
@@ -279,6 +297,7 @@ public class ShopManager : MonoBehaviour
 
 }
 
+[System.Serializable]
 public class ShopItem
 {
     private SOItemData _item;
@@ -299,8 +318,7 @@ public class ShopItem
         _item = item;
         _iTradeable = iTradeable;
         _type = type;
-        _count = count;
-        updatePrice();
+        changeCount(count);
     }
 
     public ShopItem(ShopItem item )
@@ -315,13 +333,21 @@ public class ShopItem
 
     public void updatePrice()
     {
-        _price = _iTradeable.Value * Count;
+        if (_iTradeable.Value < 0)
+            throw new ArgumentOutOfRangeException(nameof(_iTradeable), "Item prices cannot be negative.");
+        _price = checked(_iTradeable.Value * Count);
     }
 
     public void changeCount(int count)
     {
+        if (count < 0)
+            throw new ArgumentOutOfRangeException(nameof(count));
+        if (_iTradeable.Value < 0)
+            throw new ArgumentOutOfRangeException(nameof(_iTradeable), "Item prices cannot be negative.");
+
+        int price = checked(_iTradeable.Value * count);
         _count = count;
-        updatePrice();
+        _price = price;
     }
 
 
