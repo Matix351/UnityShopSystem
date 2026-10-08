@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8721031802085359775}
   - component: {fileID: 8439965748654809570}
+  - component: {fileID: 384818730145362681}
   - component: {fileID: 2009161293680355820}
   - component: {fileID: 418828120594133740}
   m_Layer: 0
@@ -54,10 +55,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shopManager: {fileID: 0}
-  _hasEnougMoneyToggle: {fileID: 2712027067664949771}
-  _hasEnougInventorySpaceToggle: {fileID: 7252009011161837605}
   _hasEnoughInventorySpace: 0
   _hasEnougMoney: 0
+--- !u!114 &384818730145362681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 421047390767351648}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e15f83207e134e40bf904e8faa24bddd, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _playerDebug: {fileID: 8439965748654809570}
+  _hasEnoughMoneyToggle: {fileID: 2712027067664949771}
+  _hasEnoughInventorySpaceToggle: {fileID: 7252009011161837605}
 --- !u!222 &2009161293680355820
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -468,19 +482,7 @@ MonoBehaviour:
   m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 8439965748654809570}
-        m_TargetAssemblyTypeName: PlayerDebug, Assembly-CSharp
-        m_MethodName: setEnougInventorySlots
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
   m_IsOn: 1
 --- !u!1 &3126703808417290138
 GameObject:

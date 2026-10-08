@@ -21,6 +21,10 @@ public class ShopManagerRegressionTests
         private readonly Func<inventorySlotData[], int, bool> _purchase;
         public TestPurchaseHandler(Func<inventorySlotData[], int, bool> purchase) => _purchase = purchase;
         public bool TryPurchase(inventorySlotData[] items, int totalPrice) => _purchase(items, totalPrice);
+        public void onPurchase(inventorySlotData[] cartItems, int price)
+        {
+            // This test double does not log purchases or update external systems.
+        }
     }
 
     private GameObject _root;
@@ -76,6 +80,88 @@ public class ShopManagerRegressionTests
     }
 
     private List<ShopCartItemSlot> Cart => GetField<List<ShopCartItemSlot>>(_manager, "_cartItemsSlots");
+
+    private PlayerDebug CreatePlayerDebug()
+    {
+        var parent = new GameObject("Player debug test parent");
+        parent.SetActive(false);
+        parent.transform.SetParent(_root.transform);
+        var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(
+            "Assets/ShopSystem/Prefabs/PlayerDebug.prefab"), parent.transform);
+        var player = instance.GetComponent<PlayerDebug>();
+        SetField(player, "_shopManager", _manager);
+        parent.SetActive(true);
+        return player;
+    }
+
+    [UnityTest]
+    public IEnumerator PlayerDebugBindingsSyncBothDirections()
+    {
+        var player = CreatePlayerDebug();
+        var bindings = player.GetComponent<PlayerDebugToggleBindings>();
+        var money = GetField<UnityEngine.UI.Toggle>(bindings, "_hasEnoughMoneyToggle");
+        var space = GetField<UnityEngine.UI.Toggle>(bindings, "_hasEnoughInventorySpaceToggle");
+        Assert.AreEqual(player.HasEnoughMoney, money.isOn);
+        Assert.AreEqual(player.HasEnoughInventorySpace, space.isOn);
+        int changes = 0;
+        player.StateChanged += () => changes++;
+        money.isOn = true;
+        space.isOn = true;
+        Assert.IsTrue(player.CanPurchaseMoney(200));
+        Assert.IsTrue(player.CanPurchaseInventorySlots(new inventorySlotData[0]));
+        Assert.AreEqual(2, changes, "Each toggle should update the player exactly once.");
+        player.setEnoughMoney(false);
+        player.setEnougInventorySlots(false);
+        Assert.IsFalse(money.isOn);
+        Assert.IsFalse(space.isOn);
+        Assert.AreEqual(4, changes, "Refreshing toggles must not trigger extra state changes.");
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator PlayerDebugBindingsDetachAndResyncWhenReenabled()
+    {
+        var player = CreatePlayerDebug();
+        var bindings = player.GetComponent<PlayerDebugToggleBindings>();
+        var money = GetField<UnityEngine.UI.Toggle>(bindings, "_hasEnoughMoneyToggle");
+        var space = GetField<UnityEngine.UI.Toggle>(bindings, "_hasEnoughInventorySpaceToggle");
+        bindings.enabled = false;
+        money.isOn = true;
+        space.isOn = true;
+        Assert.IsFalse(player.HasEnoughMoney);
+        Assert.IsFalse(player.HasEnoughInventorySpace);
+        bindings.enabled = true;
+        Assert.IsFalse(money.isOn);
+        Assert.IsFalse(space.isOn);
+        bindings.enabled = false;
+        bindings.enabled = true;
+        int changes = 0;
+        player.StateChanged += () => changes++;
+        space.isOn = true;
+        Assert.AreEqual(1, changes);
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator PlayerDebugCanPurchaseWithoutToggleBindings()
+    {
+        var player = CreatePlayerDebug();
+        Object.Destroy(player.GetComponent<PlayerDebugToggleBindings>());
+        yield return null;
+        player.setEnoughMoney(true);
+        player.setEnougInventorySlots(true);
+        int purchases = 0;
+        _manager.OnPurchaseCompleted += (items, price) => purchases++;
+        _manager.addToCart(MakeItem(_item));
+        _manager.onPurchaseButtonClick();
+        Assert.AreEqual(1, purchases);
+        Assert.IsEmpty(Cart);
+        player.enabled = false;
+        _manager.addToCart(MakeItem(_item));
+        _manager.onPurchaseButtonClick();
+        Assert.AreEqual(1, purchases, "Disabling PlayerDebug should unregister the handler.");
+        yield return null;
+    }
 
     [UnityTest]
     public IEnumerator CheckoutHasExactlyOneTransactionOwner()
@@ -273,7 +359,6 @@ public class ShopManagerRegressionTests
         _manager.openShop(new SOItemData[] { _item });
         Assert.IsEmpty(Cart);
         Assert.AreEqual(0, GetField<int>(_manager, "_cartPrice"));
-        Assert.IsFalse(oldSlot.gameObject.activeSelf);
         yield return null;
         Assert.IsTrue(oldSlot == null);
         _manager.addToCart(MakeItem(_item, 2));

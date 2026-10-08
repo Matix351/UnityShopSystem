@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -221,6 +222,11 @@ public class ShopManager : MonoBehaviour
 
     //TODO: TEST
     //NOTTESTED
+    public void updatePlayerPurchaseConditions()
+    {
+        checkCanPlayerPurchaseConditions();
+    }
+
     public bool checkCanPlayerPurchaseConditions()
     {
         if (_cartItemsSlots.Count == 0)
