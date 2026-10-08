@@ -62,8 +62,8 @@ public class ShopManager : MonoBehaviour
 
         //TODO
         //tmp[i] = items[i] as SOShopItemExample;
-        //o takie cos zrobic i stworzy kontenerowa klase, z tymi 2 ma interfejsami i potem dodac checka na null,
-        //i jak nie ma nulla to znaczy ze cast sie udal a jak jest to znaczy ze sie nie udal i wyjebac errora xD
+        //Create a container class for both interfaces and validate the results of the casts.
+        //A non-null result indicates a successful cast; otherwise, log an error.
 
         //SHOP_ITEM_VIEW
         foreach (Transform child in _itemsSlotViewContent)
@@ -114,7 +114,7 @@ public class ShopManager : MonoBehaviour
 
     }
 
-    //TODO: kasowanie koszyka, kasowanie itemkow w sklepie i ogolny reset, zeby sklep byl pusty
+    //TODO: Clear the cart and shop items, and reset all state so the shop is empty.
     public void closeShop()
     {
         Debug.Log("MATI: ShopManager CloseShop");
