@@ -27,9 +27,25 @@ public class ShopManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _cartPriceTV;
     [SerializeField] private TextMeshProUGUI _cartErrorBuyTV;
 
-    //purchase Event
-    public delegate bool PurchaseEvent(inventorySlotData[] cartItems , int price);
-    public event PurchaseEvent OnPurchaseEvent;
+    private IShopPurchaseHandler _purchaseHandler;
+    private bool _purchaseInProgress;
+    public event Action<inventorySlotData[], int> OnPurchaseCompleted;
+
+    public void RegisterPurchaseHandler(IShopPurchaseHandler handler)
+    {
+        if (handler == null)
+            throw new ArgumentNullException(nameof(handler));
+        if (_purchaseHandler != null && !ReferenceEquals(_purchaseHandler, handler)
+            && !(_purchaseHandler is UnityEngine.Object owner && owner == null))
+            throw new InvalidOperationException("The shop already has a purchase handler.");
+        _purchaseHandler = handler;
+    }
+
+    public void UnregisterPurchaseHandler(IShopPurchaseHandler handler)
+    {
+        if (ReferenceEquals(_purchaseHandler, handler))
+            _purchaseHandler = null;
+    }
     //canPurchaseEvent
     public delegate bool CanPurchaseMoneyDelegate(int price);
     public event CanPurchaseMoneyDelegate OnCanPurchaseMoneyEvent;
@@ -266,26 +282,52 @@ public class ShopManager : MonoBehaviour
 
     public void onPurchaseButtonClick()
     {
-        if (!checkCanPlayerPurchaseConditions())
-        {
+        if (_purchaseInProgress)
             return;
-        }
-
-        inventorySlotData[] cartItems = new inventorySlotData[_cartItemsSlots.Count];
-        for(int i=0; i<cartItems.Length; i++)
+        _purchaseInProgress = true;
+        try
         {
-            cartItems[i] = new inventorySlotData(_cartItemsSlots[i].Item.ItemSO, _cartItemsSlots[i].Item.Count);
-        }
+            if (!checkCanPlayerPurchaseConditions())
+                return;
 
-        if (OnPurchaseEvent?.Invoke(cartItems, _cartPrice) == true)
-        {
+            if (_purchaseHandler == null ||
+                (_purchaseHandler is UnityEngine.Object owner && owner == null))
+            {
+                ShowPurchaseError("No purchase handler is configured.");
+                return;
+            }
+
+            inventorySlotData[] cartItems = new inventorySlotData[_cartItemsSlots.Count];
+            for (int i = 0; i < cartItems.Length; i++)
+                cartItems[i] = new inventorySlotData(_cartItemsSlots[i].Item.ItemSO, _cartItemsSlots[i].Item.Count);
+            int totalPrice = _cartPrice;
+
+            if (!_purchaseHandler.TryPurchase(cartItems, totalPrice))
+            {
+                ShowPurchaseError("Purchase failed. Please try again.");
+                return;
+            }
+
             clearCart();
+            if (OnPurchaseCompleted != null)
+            {
+                foreach (Action<inventorySlotData[], int> listener in OnPurchaseCompleted.GetInvocationList())
+                {
+                    try { listener(cartItems, totalPrice); }
+                    catch (Exception exception) { Debug.LogException(exception, this); }
+                }
+            }
         }
-        else
+        finally
         {
-            _cartErrorBuyTV.SetText("Purchase failed. Please try again.");
-            _cartErrorBuyTV.gameObject.SetActive(true);
+            _purchaseInProgress = false;
         }
+    }
+
+    private void ShowPurchaseError(string message)
+    {
+        _cartErrorBuyTV.SetText(message);
+        _cartErrorBuyTV.gameObject.SetActive(true);
     }
 
     public void clearCart()

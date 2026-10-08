@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 //public class PlayerDebug : MonoBehaviour, IcanPurchaseInventorySlots, ICanPurchaseMoney
-public class PlayerDebug : MonoBehaviour
+public class PlayerDebug : MonoBehaviour, IShopPurchaseHandler
 {
     [SerializeField] private ShopManager _shopManager;
     [SerializeField] private Toggle _hasEnougMoneyToggle;
@@ -42,11 +42,12 @@ public class PlayerDebug : MonoBehaviour
 #endregion
 
 
-    private void Start()
+    private void OnEnable()
     {
+        _shopManager.RegisterPurchaseHandler(this);
         _shopManager.OnCanPurchaseMoneyEvent += CanPurchaseMoney;
         _shopManager.OnCanPurchaseInventorySlotsEvent += CanPurchaseInventorySlots;
-        _shopManager.OnPurchaseEvent += onPurchase;
+        _shopManager.OnPurchaseCompleted += generatePurchaseLog;
 
         _hasEnougInventorySpaceToggle.onValueChanged.AddListener(setEnougInventorySlots);
         _hasEnougMoneyToggle.onValueChanged.AddListener(setEnoughMoney);
@@ -55,12 +56,23 @@ public class PlayerDebug : MonoBehaviour
         _hasEnougInventorySpaceToggle.SetIsOnWithoutNotify(_hasEnoughInventorySpace);
 
     }
-    public bool onPurchase(inventorySlotData[] cartItems, int price)
+    private void OnDisable()
     {
-        generatePurchaseLog(cartItems, price);
+        if (_shopManager != null)
+        {
+            _shopManager.UnregisterPurchaseHandler(this);
+            _shopManager.OnCanPurchaseMoneyEvent -= CanPurchaseMoney;
+            _shopManager.OnCanPurchaseInventorySlotsEvent -= CanPurchaseInventorySlots;
+            _shopManager.OnPurchaseCompleted -= generatePurchaseLog;
+        }
+        _hasEnougInventorySpaceToggle.onValueChanged.RemoveListener(setEnougInventorySlots);
+        _hasEnougMoneyToggle.onValueChanged.RemoveListener(setEnoughMoney);
+    }
+
+    public bool TryPurchase(inventorySlotData[] cartItems, int price)
+    {
+        // Debug simulation only; a real handler must commit money and inventory together.
         return canPurchase();
-
-
     }
 
     private void generatePurchaseLog(inventorySlotData[] cartItems, int price)
@@ -75,7 +87,7 @@ public class PlayerDebug : MonoBehaviour
         }
         message = message + "\n" + orderList;
         message = message + "\n" + "total  price = " + price;
-        message = message + "\n" + "purchase succesfull = " + canPurchase() + "\n";
+        message = message + "\n" + "purchase successful = true\n";
         Debug.Log(message);
     }
 

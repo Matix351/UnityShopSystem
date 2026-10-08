@@ -17,6 +17,12 @@ This folder contains the item and slot data classes used by the shop. They come 
 
 The integrating inventory system is responsible for checking available space, distributing purchased quantities across stacks, and adding the items after a successful purchase. `PlayerDebug` only simulates purchase checks and logs the result; it does not implement an inventory or wallet.
 
+Implement `IShopPurchaseHandler.TryPurchase(items, totalPrice)` and register it with `ShopManager.RegisterPurchaseHandler(handler)`. Only one handler can own purchases; registering a different handler before unregistering the current one throws an exception. Call `UnregisterPurchaseHandler(handler)` when its owner is disabled or destroyed.
+
+The handler must recheck current funds and capacity and commit money and inventory changes together. Returning `false` must leave both unchanged. The shop keeps the cart on failure and clears it on success. With no handler, checkout is refused.
+
+Subscribe to `OnPurchaseCompleted` for UI, sound, quests, or logging. This notification runs after a successful transaction and cart reset; listeners do not approve or perform the purchase. The former `OnPurchaseEvent` API has been removed. `PlayerDebug` demonstrates registration and cleanup in `OnEnable` and `OnDisable`.
+
 ## Stack sizes and cart quantities
 
 - `SOItemData.maxStackAmmount` limits how many items fit in one inventory stack. The sample assets use 64 for Other and Food, and 1 for Weapons and Tools.

@@ -16,6 +16,13 @@ public class UntypedShopTestItem : SOItemData, IItemTradeable
 
 public class ShopManagerRegressionTests
 {
+    private sealed class TestPurchaseHandler : IShopPurchaseHandler
+    {
+        private readonly Func<inventorySlotData[], int, bool> _purchase;
+        public TestPurchaseHandler(Func<inventorySlotData[], int, bool> purchase) => _purchase = purchase;
+        public bool TryPurchase(inventorySlotData[] items, int totalPrice) => _purchase(items, totalPrice);
+    }
+
     private GameObject _root;
     private ShopManager _manager;
     private SOShopItemExample _item;
@@ -71,10 +78,93 @@ public class ShopManagerRegressionTests
     private List<ShopCartItemSlot> Cart => GetField<List<ShopCartItemSlot>>(_manager, "_cartItemsSlots");
 
     [UnityTest]
+    public IEnumerator CheckoutHasExactlyOneTransactionOwner()
+    {
+        int calls = 0;
+        var handler = new TestPurchaseHandler((items, price) => { calls++; return true; });
+        var other = new TestPurchaseHandler((items, price) => throw new InvalidOperationException("Wrong handler called"));
+        _manager.RegisterPurchaseHandler(handler);
+        Assert.DoesNotThrow(() => _manager.RegisterPurchaseHandler(handler));
+        Assert.Throws<InvalidOperationException>(() => _manager.RegisterPurchaseHandler(other));
+        _manager.UnregisterPurchaseHandler(other);
+        _manager.addToCart(MakeItem(_item));
+        _manager.onPurchaseButtonClick();
+        Assert.AreEqual(1, calls);
+        _manager.UnregisterPurchaseHandler(handler);
+        Assert.DoesNotThrow(() => _manager.RegisterPurchaseHandler(other));
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator CheckoutNotifiesAllListenersOnlyAfterSuccess()
+    {
+        bool success = false;
+        int notifications = 0;
+        _manager.RegisterPurchaseHandler(new TestPurchaseHandler((items, price) => success));
+        _manager.OnPurchaseCompleted += (items, price) =>
+        {
+            Assert.IsEmpty(Cart);
+            Assert.AreEqual(400, price);
+            Assert.AreEqual(2, items[0].ammount);
+            notifications++;
+        };
+        _manager.OnPurchaseCompleted += (items, price) => notifications++;
+        _manager.addToCart(MakeItem(_item, 2));
+        _manager.onPurchaseButtonClick();
+        Assert.AreEqual(0, notifications);
+        success = true;
+        _manager.onPurchaseButtonClick();
+        Assert.AreEqual(2, notifications);
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator CheckoutPreventsReentrantPurchases()
+    {
+        int calls = 0;
+        _manager.RegisterPurchaseHandler(new TestPurchaseHandler((items, price) =>
+        {
+            calls++;
+            _manager.onPurchaseButtonClick();
+            return true;
+        }));
+        _manager.OnPurchaseCompleted += (items, price) =>
+        {
+            _manager.addToCart(MakeItem(_item));
+            _manager.onPurchaseButtonClick();
+        };
+        _manager.addToCart(MakeItem(_item));
+        _manager.onPurchaseButtonClick();
+        Assert.AreEqual(1, calls);
+        Assert.AreEqual(1, Cart.Count);
+        _manager.onPurchaseButtonClick();
+        Assert.AreEqual(2, calls);
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator CheckoutListenerExceptionDoesNotRepeatTransactionOrBlockOtherListeners()
+    {
+        int calls = 0;
+        int notifications = 0;
+        _manager.RegisterPurchaseHandler(new TestPurchaseHandler((items, price) => { calls++; return true; }));
+        _manager.OnPurchaseCompleted += (items, price) => throw new InvalidOperationException("Test listener failure");
+        _manager.OnPurchaseCompleted += (items, price) => notifications++;
+        _manager.addToCart(MakeItem(_item));
+        LogAssert.Expect(LogType.Exception, "InvalidOperationException: Test listener failure");
+        _manager.onPurchaseButtonClick();
+        _manager.onPurchaseButtonClick();
+        Assert.AreEqual(1, calls);
+        Assert.AreEqual(1, notifications);
+        Assert.IsEmpty(Cart);
+        yield return null;
+    }
+
+    [UnityTest]
     public IEnumerator CheckoutRejectsEmptyAndClearedCarts()
     {
         int purchases = 0;
-        _manager.OnPurchaseEvent += (items, price) => { purchases++; return true; };
+        _manager.RegisterPurchaseHandler(new TestPurchaseHandler((items, price) => { purchases++; return true; }));
         Assert.IsFalse(_manager.checkCanPlayerPurchaseConditions());
         _manager.onPurchaseButtonClick();
         _manager.addToCart(MakeItem(_item));
@@ -96,13 +186,13 @@ public class ShopManagerRegressionTests
         int purchases = 0;
         _manager.OnCanPurchaseMoneyEvent += price => hasMoney;
         _manager.OnCanPurchaseInventorySlotsEvent += items => hasSpace;
-        _manager.OnPurchaseEvent += (items, price) =>
+        _manager.RegisterPurchaseHandler(new TestPurchaseHandler((items, price) =>
         {
             purchases++;
             Assert.AreEqual(400, price);
             Assert.AreEqual(2, items[0].ammount);
             return true;
-        };
+        }));
         _manager.addToCart(MakeItem(_item, 2));
         hasMoney = false;
         _manager.onPurchaseButtonClick();
@@ -128,7 +218,7 @@ public class ShopManagerRegressionTests
     [UnityTest]
     public IEnumerator CheckoutFailureKeepsCartAndDisplaysError()
     {
-        _manager.OnPurchaseEvent += (items, price) => false;
+        _manager.RegisterPurchaseHandler(new TestPurchaseHandler((items, price) => false));
         _manager.addToCart(MakeItem(_item, 2));
         _manager.onPurchaseButtonClick();
         Assert.AreEqual(2, Cart[0].Item.Count);
