@@ -8,6 +8,12 @@ using UnityEngine.Events;
 
 public class ShopManager : MonoBehaviour
 {
+    [Header("Settings")]
+    [SerializeField, Min(1)]
+    [Tooltip("Maximum quantity of each item in the cart, independent of inventory stack size.")]
+    private int _maxQuantityPerItem = 999;
+    public int GetMaxQuantityPerItem => _maxQuantityPerItem;
+    [Header("SetUp")]
 
     [SerializeField] private ShopItemSlot _shopItemSlotPrefab;
     [SerializeField] private Transform _itemsSlotViewContent;
@@ -20,10 +26,6 @@ public class ShopManager : MonoBehaviour
     //cart
     [SerializeField] private ShopCartItemSlot _cartItemSlotPrefab;
     [SerializeField] private Transform _cartItemSlotViewContent;
-    [SerializeField, Min(1)]
-    [Tooltip("Maximum quantity of each item in the cart, independent of inventory stack size.")]
-    private int _maxQuantityPerItem = 999;
-    public int GetMaxQuantityPerItem => _maxQuantityPerItem;
     private List<ShopCartItemSlot> _cartItemsSlots = new List<ShopCartItemSlot>();
     [SerializeField] private TextMeshProUGUI _cartPriceTV;
     [SerializeField] private TextMeshProUGUI _cartErrorBuyTV;
