@@ -207,6 +207,13 @@ public class ShopManager : MonoBehaviour
     //NOTTESTED
     public bool checkCanPlayerPurchaseConditions()
     {
+        if (_cartItemsSlots.Count == 0)
+        {
+            _canPlayerPurchase = false;
+            _cartErrorBuyTV.gameObject.SetActive(false);
+            return false;
+        }
+
         bool enougMoney = true;
         bool enoughInventorySlots = true;
 
@@ -259,7 +266,7 @@ public class ShopManager : MonoBehaviour
 
     public void onPurchaseButtonClick()
     {
-        if (!_canPlayerPurchase) 
+        if (!checkCanPlayerPurchaseConditions())
         {
             return;
         }
@@ -270,9 +277,14 @@ public class ShopManager : MonoBehaviour
             cartItems[i] = new inventorySlotData(_cartItemsSlots[i].Item.ItemSO, _cartItemsSlots[i].Item.Count);
         }
 
-        if (OnPurchaseEvent.Invoke(cartItems, _cartPrice))
+        if (OnPurchaseEvent?.Invoke(cartItems, _cartPrice) == true)
         {
             clearCart();
+        }
+        else
+        {
+            _cartErrorBuyTV.SetText("Purchase failed. Please try again.");
+            _cartErrorBuyTV.gameObject.SetActive(true);
         }
     }
 

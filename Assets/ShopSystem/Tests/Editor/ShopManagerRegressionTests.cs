@@ -71,6 +71,85 @@ public class ShopManagerRegressionTests
     private List<ShopCartItemSlot> Cart => GetField<List<ShopCartItemSlot>>(_manager, "_cartItemsSlots");
 
     [UnityTest]
+    public IEnumerator CheckoutRejectsEmptyAndClearedCarts()
+    {
+        int purchases = 0;
+        _manager.OnPurchaseEvent += (items, price) => { purchases++; return true; };
+        Assert.IsFalse(_manager.checkCanPlayerPurchaseConditions());
+        _manager.onPurchaseButtonClick();
+        _manager.addToCart(MakeItem(_item));
+        _manager.clearCart();
+        _manager.onPurchaseButtonClick();
+        _manager.addToCart(MakeItem(_item));
+        Cart[0].updateData(0);
+        Assert.IsFalse(_manager.checkCanPlayerPurchaseConditions());
+        _manager.onPurchaseButtonClick();
+        Assert.AreEqual(0, purchases);
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator CheckoutRechecksBothConditionsAndAllowsRetryAfterRecovery()
+    {
+        bool hasMoney = true;
+        bool hasSpace = true;
+        int purchases = 0;
+        _manager.OnCanPurchaseMoneyEvent += price => hasMoney;
+        _manager.OnCanPurchaseInventorySlotsEvent += items => hasSpace;
+        _manager.OnPurchaseEvent += (items, price) =>
+        {
+            purchases++;
+            Assert.AreEqual(400, price);
+            Assert.AreEqual(2, items[0].ammount);
+            return true;
+        };
+        _manager.addToCart(MakeItem(_item, 2));
+        hasMoney = false;
+        _manager.onPurchaseButtonClick();
+        Assert.AreEqual(0, purchases);
+        Assert.AreEqual(2, Cart[0].Item.Count);
+        Assert.IsTrue(GetField<TextMeshProUGUI>(_manager, "_cartErrorBuyTV").gameObject.activeSelf);
+        hasMoney = true;
+        hasSpace = false;
+        _manager.onPurchaseButtonClick();
+        Assert.AreEqual(0, purchases);
+        Assert.AreEqual(400, GetField<int>(_manager, "_cartPrice"));
+        hasSpace = true;
+        _manager.onPurchaseButtonClick();
+        Assert.AreEqual(1, purchases);
+        Assert.IsEmpty(Cart);
+        Assert.AreEqual(0, GetField<int>(_manager, "_cartPrice"));
+        Assert.IsFalse(GetField<bool>(_manager, "_canPlayerPurchase"));
+        _manager.onPurchaseButtonClick();
+        Assert.AreEqual(1, purchases);
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator CheckoutFailureKeepsCartAndDisplaysError()
+    {
+        _manager.OnPurchaseEvent += (items, price) => false;
+        _manager.addToCart(MakeItem(_item, 2));
+        _manager.onPurchaseButtonClick();
+        Assert.AreEqual(2, Cart[0].Item.Count);
+        Assert.AreEqual(400, GetField<int>(_manager, "_cartPrice"));
+        var error = GetField<TextMeshProUGUI>(_manager, "_cartErrorBuyTV");
+        Assert.IsTrue(error.gameObject.activeSelf);
+        StringAssert.Contains("Purchase failed", error.text);
+        yield return null;
+    }
+
+    [UnityTest]
+    public IEnumerator CheckoutWithoutPurchaseHandlerKeepsCart()
+    {
+        _manager.addToCart(MakeItem(_item));
+        Assert.DoesNotThrow(() => _manager.onPurchaseButtonClick());
+        Assert.AreEqual(1, Cart.Count);
+        Assert.IsTrue(GetField<TextMeshProUGUI>(_manager, "_cartErrorBuyTV").gameObject.activeSelf);
+        yield return null;
+    }
+
+    [UnityTest]
     public IEnumerator CloseWithoutCallbackAndRepeatedCloseAreSafe()
     {
         Assert.DoesNotThrow(() => _manager.closeShop());
