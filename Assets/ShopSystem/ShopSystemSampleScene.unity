@@ -415,10 +415,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerDebug (1)
       objectReference: {fileID: 0}
-    - target: {fileID: 421047390767351648, guid: 6104c9d227c003c429d09273c2b78940, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8439965748654809570, guid: 6104c9d227c003c429d09273c2b78940, type: 3}
       propertyPath: _shopManager
       value: 
