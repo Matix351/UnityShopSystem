@@ -48,22 +48,42 @@ public class ShopItemSlot : MonoBehaviour
         addItemToCart();
     }
 
+    // The illustrated UI keeps a quantity field visible beside its Add button.
+    public void AddSelectedQuantity()
+    {
+        if (string.IsNullOrWhiteSpace(_inputAmmountTV.text))
+            AddToCartOneItem();
+        else
+            AddToCartMultipleItems();
+        _inputAmmountTV.text = "1";
+    }
+
+    public void IncreaseSelectedQuantity() => ChangeSelectedQuantity(1);
+    public void DecreaseSelectedQuantity() => ChangeSelectedQuantity(-1);
+
+    private void ChangeSelectedQuantity(int delta)
+    {
+        int.TryParse(_inputAmmountTV.text, out int count);
+        int maximum = _shopManager != null ? _shopManager.GetMaxQuantityPerItem : 999;
+        _inputAmmountTV.text = Math.Max(1L, Math.Min((long)maximum, (long)count + delta)).ToString();
+    }
+
     public void AddToCartMultipleItems()
     {
-        if(changeItemCount())
+        if(setPlayerInputAmmount())
             addItemToCart();
 
         resetItemCount();
         _inputAmmountTV.text = "";
     }
 
-    private bool changeItemCount()
+    private bool setPlayerInputAmmount()
     {
         if ( !(int.TryParse(_inputAmmountTV.text, out int count)) )
         {
             Debug.Log("WrongInput", this);
         }
-        else if(count >= 0) 
+        else if(count > 0)
         {
             _itemData.changeCount(count);
             return true;
@@ -89,32 +109,6 @@ public class ShopItemSlot : MonoBehaviour
         resetItemCount();
     }
 }
-
-//[System.Serializable]
-//public class ShopItemData 
-//{
-
-//    [SerializeField] private SOItemData _item;
-//    public SOItemData Item => _item;
-//    private IShopItem _shopItem;
-//    public int Value => _shopItem.Value;
-//    public ITEM_TYPE Type => _shopItem.Type;
-
-
-
-
-//    public ShopItemData(SOItemData item, IShopItem shopItem)
-//    {
-//        _item = item;
-//        _shopItem = (IShopItem)item;
-//    }
-
-//    //public int CalulatePrice(int ammount)
-//    //{
-//    //    return _shopItem.Value * ammount;
-//    //}
-//}
-
 
 
 

@@ -1,11 +1,19 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
 
 public class ShopManager : MonoBehaviour
 {
+    [Header("Settings")]
+    [SerializeField, Min(1)]
+    [Tooltip("Maximum quantity of each item in the cart, independent of inventory stack size.")]
+    private int _maxQuantityPerItem = 999;
+    public int GetMaxQuantityPerItem => _maxQuantityPerItem;
+    [Header("SetUp")]
 
     [SerializeField] private ShopItemSlot _shopItemSlotPrefab;
     [SerializeField] private Transform _itemsSlotViewContent;
@@ -18,22 +26,37 @@ public class ShopManager : MonoBehaviour
     //cart
     [SerializeField] private ShopCartItemSlot _cartItemSlotPrefab;
     [SerializeField] private Transform _cartItemSlotViewContent;
-
     private List<ShopCartItemSlot> _cartItemsSlots = new List<ShopCartItemSlot>();
     [SerializeField] private TextMeshProUGUI _cartPriceTV;
     [SerializeField] private TextMeshProUGUI _cartErrorBuyTV;
 
-    //purchase Event
-    public delegate bool PurchaseEvent(inventorySlotData[] cartItems , int price);
-    public event PurchaseEvent OnPurchaseEvent;
+    private IShopPurchaseHandler _purchaseHandler;
+    private bool _purchaseInProgress;
+    public event Action<inventorySlotData[], int> OnPurchaseCompleted;
+
+    public void RegisterPurchaseHandler(IShopPurchaseHandler handler)
+    {
+        if (handler == null)
+            throw new ArgumentNullException(nameof(handler));
+        if (_purchaseHandler != null && !ReferenceEquals(_purchaseHandler, handler)
+            && !(_purchaseHandler is UnityEngine.Object owner && owner == null))
+            throw new InvalidOperationException("The shop already has a purchase handler.");
+        _purchaseHandler = handler;
+    }
+
+    public void UnregisterPurchaseHandler(IShopPurchaseHandler handler)
+    {
+        if (ReferenceEquals(_purchaseHandler, handler))
+            _purchaseHandler = null;
+    }
     //canPurchaseEvent
     public delegate bool CanPurchaseMoneyDelegate(int price);
     public event CanPurchaseMoneyDelegate OnCanPurchaseMoneyEvent;
     public delegate bool CanPurchaseInventorySlotsDelegate(inventorySlotData[] cartItems);
     public event CanPurchaseInventorySlotsDelegate OnCanPurchaseInventorySlotsEvent;
     //openShopEvent
-    public delegate void shopOpenEvent(bool isOpen);
-    public event shopOpenEvent OnShopOpenEvent;
+    //public delegate void shopOpenEvent(bool isOpen);
+    //public event shopOpenEvent OnShopOpenEvent;
 
     UnityAction _onShopCloseAction = null;
     private bool _canPlayerPurchase = false;
@@ -45,31 +68,28 @@ public class ShopManager : MonoBehaviour
         Debug.Log("MATI: ShopManager go");
         for(int i=0; i<items.Length; i++)
         {
-            if ( !(items[i] is IItemTradeable) )
+            if (items[i] == null || !(items[i] is IItemTradeable tradeable) )
             {
-                Debug.Log("MATI: ShopManager one of item is not IItemTradeable");
+                Debug.LogError("Shop items must be non-null and tradeable", this);
                 return;
             }
-            //if (!(items[i] is IItemType))
-            //{
-            //    Debug.Log("MATI: ShopManager one of item is not IItemType");
-            //    return;
-            //}
 
         }
         Debug.Log("MATI: ShopManager AfterCheck");
         _onShopCloseAction = onShopClosedAction;
+        clearCart();
 
-        //TODO
-        //tmp[i] = items[i] as SOShopItemExample;
-        //o takie cos zrobic i stworzy kontenerowa klase, z tymi 2 ma interfejsami i potem dodac checka na null,
-        //i jak nie ma nulla to znaczy ze cast sie udal a jak jest to znaczy ze sie nie udal i wyjebac errora xD
-
-        //SHOP_ITEM_VIEW
+        //CLEAR_SHOP_ITEM_VIEW
         foreach (Transform child in _itemsSlotViewContent)
         {
             GameObject.Destroy(child.gameObject);
         }
+        //CLEAR_CART_ITEM_VIEW
+        foreach (Transform child in _cartItemSlotViewContent)
+        {
+            GameObject.Destroy(child.gameObject);
+        }
+
 
         _itemSlots = new ShopItemSlot[items.Length];
         HashSet<ITEM_TYPE> tags = new HashSet<ITEM_TYPE>();
@@ -79,7 +99,7 @@ public class ShopManager : MonoBehaviour
             ShopItemSlot itemSlot = Instantiate(_shopItemSlotPrefab, _itemsSlotViewContent);
             itemSlot.init(items[i], this);
 
-            tags.Add((items[i] as IItemType).Type);
+            tags.Add(itemSlot.ItemData.Type);
             
             _itemSlots[i] = itemSlot;
         }
@@ -99,11 +119,8 @@ public class ShopManager : MonoBehaviour
             tagView.init(tag, this);
         }
 
-        //carItemSlots
-        foreach (Transform child in _cartItemSlotViewContent)
-        {
-            GameObject.Destroy(child.gameObject);
-        }
+
+
 
         _cartErrorBuyTV.gameObject.SetActive(false);
         Debug.Log("MATI: ShopManager setActiveTreu");
@@ -114,22 +131,27 @@ public class ShopManager : MonoBehaviour
 
     }
 
-    //TODO: kasowanie koszyka, kasowanie itemkow w sklepie i ogolny reset, zeby sklep byl pusty
+    //TODO: Clear the cart and shop items, and reset all state so the shop is empty.
     public void closeShop()
     {
         Debug.Log("MATI: ShopManager CloseShop");
         clearCart();
         this.gameObject.SetActive(false);
         //OnShopOpenEvent?.Invoke(false);
-        
-        _onShopCloseAction.Invoke();
+
+        UnityAction onShopClosed = _onShopCloseAction;
         _onShopCloseAction = null;
+        onShopClosed?.Invoke();
 
     }
 
 
     public void OnTagClick(ITEM_TYPE type, bool all = false)
     {
+        foreach (ShopTagButton tag in _tagViewContent.GetComponentsInChildren<ShopTagButton>())
+            tag.UpdateSelection(type, all);
+        var itemScroll = _itemsSlotViewContent.GetComponentInParent<UnityEngine.UI.ScrollRect>();
+        if (itemScroll != null) itemScroll.verticalNormalizedPosition = 1;
         if(all)
         {
             foreach (ShopItemSlot slot in _itemSlots)
@@ -155,19 +177,35 @@ public class ShopManager : MonoBehaviour
 
     public void addToCart(ShopItem item)
     {
+        if (item == null || item.Count <= 0)
+            return;
+
         foreach(ShopCartItemSlot slot in _cartItemsSlots)
         {
             if(slot.Item.ItemSO == item.ItemSO)
             {
-                slot.updateData(item.Count + slot.Item.Count);
+                int newQuantity = item.Count + slot.Item.Count;
+                if(newQuantity >  _maxQuantityPerItem)
+                    newQuantity = _maxQuantityPerItem;
+
+                slot.updateData(newQuantity);
                 return;
             }
         }
 
+
+
+        ShopItem cartItem = new ShopItem(item);
+        if(item.Count > _maxQuantityPerItem)
+            cartItem.changeCount(_maxQuantityPerItem);
+        else
+            cartItem.changeCount(item.Count);
+
         ShopCartItemSlot itemSlot = Instantiate(_cartItemSlotPrefab, _cartItemSlotViewContent);
         _cartItemsSlots.Add(itemSlot);
-        itemSlot.init(item, this);
+        itemSlot.init(cartItem, this);
     }
+
 
     public void OnCartItemDataChange(ShopCartItemSlot cartItemSlot)
     {
@@ -181,6 +219,7 @@ public class ShopManager : MonoBehaviour
         foreach (ShopCartItemSlot slot in _cartItemsSlots)
         {
             _cartPrice += slot.Item.PriceMultiple;
+
         }
         checkCanPlayerPurchaseConditions();
         updateCartTVs();
@@ -189,8 +228,20 @@ public class ShopManager : MonoBehaviour
 
     //TODO: TEST
     //NOTTESTED
+    public void updatePlayerPurchaseConditions()
+    {
+        checkCanPlayerPurchaseConditions();
+    }
+
     public bool checkCanPlayerPurchaseConditions()
     {
+        if (_cartItemsSlots.Count == 0)
+        {
+            _canPlayerPurchase = false;
+            _cartErrorBuyTV.gameObject.SetActive(false);
+            return false;
+        }
+
         bool enougMoney = true;
         bool enoughInventorySlots = true;
 
@@ -243,21 +294,52 @@ public class ShopManager : MonoBehaviour
 
     public void onPurchaseButtonClick()
     {
-        if (!_canPlayerPurchase) 
-        {
+        if (_purchaseInProgress)
             return;
-        }
-
-        inventorySlotData[] cartItems = new inventorySlotData[_cartItemsSlots.Count];
-        for(int i=0; i<cartItems.Length; i++)
+        _purchaseInProgress = true;
+        try
         {
-            cartItems[i] = new inventorySlotData(_cartItemsSlots[i].Item.ItemSO, _cartItemsSlots[i].Item.Count);
-        }
+            if (!checkCanPlayerPurchaseConditions())
+                return;
 
-        if (OnPurchaseEvent.Invoke(cartItems, _cartPrice))
-        {
+            if (_purchaseHandler == null ||
+                (_purchaseHandler is UnityEngine.Object owner && owner == null))
+            {
+                ShowPurchaseError("No purchase handler is configured.");
+                return;
+            }
+
+            inventorySlotData[] cartItems = new inventorySlotData[_cartItemsSlots.Count];
+            for (int i = 0; i < cartItems.Length; i++)
+                cartItems[i] = new inventorySlotData(_cartItemsSlots[i].Item.ItemSO, _cartItemsSlots[i].Item.Count);
+            int totalPrice = _cartPrice;
+
+            if (!_purchaseHandler.TryPurchase(cartItems, totalPrice))
+            {
+                ShowPurchaseError("Purchase failed. Please try again.");
+                return;
+            }
+
             clearCart();
+            if (OnPurchaseCompleted != null)
+            {
+                foreach (Action<inventorySlotData[], int> listener in OnPurchaseCompleted.GetInvocationList())
+                {
+                    try { listener(cartItems, totalPrice); }
+                    catch (Exception exception) { Debug.LogException(exception, this); }
+                }
+            }
         }
+        finally
+        {
+            _purchaseInProgress = false;
+        }
+    }
+
+    private void ShowPurchaseError(string message)
+    {
+        _cartErrorBuyTV.SetText(message);
+        _cartErrorBuyTV.gameObject.SetActive(true);
     }
 
     public void clearCart()
@@ -269,6 +351,8 @@ public class ShopManager : MonoBehaviour
 
         _cartItemsSlots.Clear();
         _cartPrice = 0;
+        _canPlayerPurchase = false;
+        _cartErrorBuyTV.gameObject.SetActive(false);
         updateCartTVs();
     }
 
@@ -279,6 +363,7 @@ public class ShopManager : MonoBehaviour
 
 }
 
+[System.Serializable]
 public class ShopItem
 {
     private SOItemData _item;
@@ -299,8 +384,7 @@ public class ShopItem
         _item = item;
         _iTradeable = iTradeable;
         _type = type;
-        _count = count;
-        updatePrice();
+        changeCount(count);
     }
 
     public ShopItem(ShopItem item )
@@ -315,13 +399,21 @@ public class ShopItem
 
     public void updatePrice()
     {
-        _price = _iTradeable.Value * Count;
+        if (_iTradeable.Value < 0)
+            throw new ArgumentOutOfRangeException(nameof(_iTradeable), "Item prices cannot be negative.");
+        _price = checked(_iTradeable.Value * Count);
     }
 
     public void changeCount(int count)
     {
+        if (count < 0)
+            throw new ArgumentOutOfRangeException(nameof(count));
+        if (_iTradeable.Value < 0)
+            throw new ArgumentOutOfRangeException(nameof(_iTradeable), "Item prices cannot be negative.");
+
+        int price = checked(_iTradeable.Value * count);
         _count = count;
-        updatePrice();
+        _price = price;
     }
 
 

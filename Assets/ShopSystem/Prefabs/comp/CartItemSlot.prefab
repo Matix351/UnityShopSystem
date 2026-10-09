@@ -103,6 +103,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -257,7 +258,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7708748672020246082}
+      - m_Target: {fileID: 2640504486277088112}
         m_TargetAssemblyTypeName: ShopCartItemSlot, Assembly-CSharp
         m_MethodName: increaseCountButton
         m_Mode: 1
@@ -304,7 +305,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 30, y: 0}
+  m_SizeDelta: {x: 40, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2435063472273271084
 CanvasRenderer:
@@ -334,7 +335,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '10
+  m_text: '101
 
 '
   m_isRightToLeft: 0
@@ -374,6 +375,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -442,7 +444,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 0}
+  m_SizeDelta: {x: 190, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2270737794411334488
 CanvasRenderer:
@@ -512,6 +514,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -666,7 +669,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7708748672020246082}
+      - m_Target: {fileID: 2640504486277088112}
         m_TargetAssemblyTypeName: ShopCartItemSlot, Assembly-CSharp
         m_MethodName: updateData
         m_Mode: 3
@@ -799,7 +802,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7708748672020246082}
+      - m_Target: {fileID: 2640504486277088112}
         m_TargetAssemblyTypeName: ShopCartItemSlot, Assembly-CSharp
         m_MethodName: decreaseCountButton
         m_Mode: 1
@@ -914,6 +917,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1050,6 +1054,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1186,6 +1191,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1332,7 +1338,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6648054645716382085}
-  - component: {fileID: 7708748672020246082}
+  - component: {fileID: 2640504486277088112}
   - component: {fileID: 6602223289678061237}
   - component: {fileID: 2883733564818266842}
   - component: {fileID: 2350846450306377524}
@@ -1367,7 +1373,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 386, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &7708748672020246082
+--- !u!114 &2640504486277088112
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1376,9 +1382,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 9102944559589072002}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 93ab5e3959954364a9d35221e2f25304, type: 3}
+  m_Script: {fileID: 11500000, guid: bd52d6b5931def04f91117b11381e03d, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShopCartItemSlot
   _countTV: {fileID: 7233520460620387537}
   _nameTV: {fileID: 5961239721955792817}
   _priceTV: {fileID: 1463344371744114105}

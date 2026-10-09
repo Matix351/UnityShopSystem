@@ -1,83 +1,43 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 //public class PlayerDebug : MonoBehaviour, IcanPurchaseInventorySlots, ICanPurchaseMoney
-public class PlayerDebug : MonoBehaviour
+public class PlayerDebug : MonoBehaviour, IShopPurchaseHandler
 {
     [SerializeField] private ShopManager _shopManager;
-    [SerializeField] private Toggle _hasEnougMoneyToggle;
-    [SerializeField] private Toggle _hasEnougInventorySpaceToggle;
     [SerializeField] private bool _hasEnoughInventorySpace;
     [SerializeField] private bool _hasEnougMoney;
+    public bool HasEnoughMoney => _hasEnougMoney;
+    public bool HasEnoughInventorySpace => _hasEnoughInventorySpace;
+    public event System.Action StateChanged;
 
-
-
-
-    private void OnValidate()
-    {
-        if (!Application.isPlaying)
-            return;
-
-        _hasEnougMoneyToggle.SetIsOnWithoutNotify(_hasEnougMoney);
-        _hasEnougInventorySpaceToggle.SetIsOnWithoutNotify(_hasEnoughInventorySpace);
-        _shopManager.checkCanPlayerPurchaseConditions();
-    }
-
-    #region debugToolsSetup
-
-    public void setEnoughMoney(bool money)
-    {
-        _hasEnougMoney = money;
-        _shopManager.checkCanPlayerPurchaseConditions();
-
-    }
-
-    public void setEnougInventorySlots(bool inventorySlots)
-    {
-        _hasEnoughInventorySpace = inventorySlots;
-        _shopManager.checkCanPlayerPurchaseConditions();
-
-    }
-
-#endregion
-
+    #region mainLogic
+    //Main Logic
+    //------------------------------------------------------------
 
     private void Start()
     {
+        _shopManager.RegisterPurchaseHandler(this);
         _shopManager.OnCanPurchaseMoneyEvent += CanPurchaseMoney;
         _shopManager.OnCanPurchaseInventorySlotsEvent += CanPurchaseInventorySlots;
-        _shopManager.OnPurchaseEvent += onPurchase;
-
-        _hasEnougInventorySpaceToggle.onValueChanged.AddListener(setEnougInventorySlots);
-        _hasEnougMoneyToggle.onValueChanged.AddListener(setEnoughMoney);
-
-        _hasEnougMoneyToggle.SetIsOnWithoutNotify(_hasEnougMoney);
-        _hasEnougInventorySpaceToggle.SetIsOnWithoutNotify(_hasEnoughInventorySpace);
-
-    }
-    public bool onPurchase(inventorySlotData[] cartItems, int price)
-    {
-        generatePurchaseLog(cartItems, price);
-        return canPurchase();
-
-
+        _shopManager.OnPurchaseCompleted += generatePurchaseLog;
+       
+        StateChanged += _shopManager.updatePlayerPurchaseConditions;
     }
 
-    private void generatePurchaseLog(inventorySlotData[] cartItems, int price)
-    {
-        string message = "PurchaseList - expand this log for details";
-        message = (message + "\n" + "cartItems List length =" + cartItems.Length);
 
-        string orderList = "";
-        for (int i = 0; i < cartItems.Length; i++)
+    private void OnDisable()
+    {
+        if (_shopManager != null)
         {
-            orderList += ("\n" + "[ " + i + " ] = " + cartItems[i].item.Name + " x" + cartItems[i].ammount);
+            _shopManager.UnregisterPurchaseHandler(this);
+            _shopManager.OnCanPurchaseMoneyEvent -= CanPurchaseMoney;
+            _shopManager.OnCanPurchaseInventorySlotsEvent -= CanPurchaseInventorySlots;
+            _shopManager.OnPurchaseCompleted -= generatePurchaseLog;
         }
-        message = message + "\n" + orderList;
-        message = message + "\n" + "total  price = " + price;
-        message = message + "\n" + "purchase succesfull = " + canPurchase() + "\n";
-        Debug.Log(message);
+
     }
+
+    
 
     public bool CanPurchaseMoney(int price)
     {
@@ -94,23 +54,57 @@ public class PlayerDebug : MonoBehaviour
         return _hasEnoughInventorySpace && _hasEnougMoney;
     }
 
+    public bool TryPurchase(inventorySlotData[] cartItems, int price)
+    {
+        return canPurchase();
+    }
+
+    //this is called when purchase is succesfull, You want to remove money here and add items to player inventory
+    public void onPurchase(inventorySlotData[] cartItems, int price)
+    {
+        generatePurchaseLog(cartItems, price);
+    }
+
+
+    //------------------------------------------------------------
+    #endregion
+
+    private void generatePurchaseLog(inventorySlotData[] cartItems, int price)
+    {
+        string message = "PurchaseList - expand this log for details";
+        message = (message + "\n" + "cartItems List length =" + cartItems.Length);
+
+        string orderList = "";
+        for (int i = 0; i < cartItems.Length; i++)
+        {
+            orderList += ("\n" + "[ " + i + " ] = " + cartItems[i].item.Name + " x" + cartItems[i].ammount);
+        }
+        message = message + "\n" + orderList;
+        message = message + "\n" + "total  price = " + price;
+        message = message + "\n" + "purchase successful = true\n";
+        Debug.Log(message);
+    }
+
+    #region debugToolsSetup
+
+    private void OnValidate()
+    {
+        if (!Application.isPlaying)
+            return;
+
+        StateChanged?.Invoke();
+    }
+
+    public void setEnoughMoney(bool money)
+    {
+        _hasEnougMoney = money;
+        StateChanged?.Invoke();
+    }
+
+    public void setEnougInventorySlots(bool inventorySlots)
+    {
+        _hasEnoughInventorySpace = inventorySlots;
+        StateChanged?.Invoke();
+    }
+    #endregion
 }
-
-
-//public interface IonPurchase
-//{
-//    public bool onPurchase(inventorySlotData[] cartItems, int price);
-//}
-
-//public interface ICanPurchaseMoney
-//{
-//    public bool CanPurchaseMoney(int price);
-
-//}
-
-//public interface IcanPurchaseInventorySlots
-//{
-//    public bool CanPurchaseInventorySlots(inventorySlotData[] cartItems);
-
-//}
-

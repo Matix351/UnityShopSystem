@@ -1,0 +1,1 @@
+public enum ITEM_TYPE { Other, Weapon, Food, Tool }

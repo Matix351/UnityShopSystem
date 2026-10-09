@@ -180,6 +180,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -318,6 +319,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -665,6 +667,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -932,7 +935,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7083184334085595700}
+      - m_Target: {fileID: 3519347889827521701}
         m_TargetAssemblyTypeName: ShopItemSlot, Assembly-CSharp
         m_MethodName: AddToCartMultipleItems
         m_Mode: 1
@@ -1100,6 +1103,7 @@ MonoBehaviour:
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1236,6 +1240,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -1459,7 +1464,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7565939980313526822}
-  - component: {fileID: 7083184334085595700}
+  - component: {fileID: 3519347889827521701}
   - component: {fileID: 3974144098554303411}
   - component: {fileID: 7246950369491319537}
   m_Layer: 5
@@ -1490,7 +1495,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 130, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &7083184334085595700
+--- !u!114 &3519347889827521701
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1499,9 +1504,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4404414199823530007}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5caaccbd57832324faaa3cdefab9d068, type: 3}
+  m_Script: {fileID: 11500000, guid: 144a97838f0d5ca4bb2fc2f71de51a55, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
+  m_EditorClassIdentifier: Assembly-CSharp::ShopItemSlot
   _iconImage: {fileID: 8472952494035762025}
   _nameTV: {fileID: 2499768786700067116}
   _priceTV: {fileID: 2133601110536483199}
@@ -1717,7 +1722,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 7083184334085595700}
+      - m_Target: {fileID: 3519347889827521701}
         m_TargetAssemblyTypeName: ShopItemSlot, Assembly-CSharp
         m_MethodName: AddToCartOneItem
         m_Mode: 1
@@ -1834,6 +1839,7 @@ MonoBehaviour:
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
+  m_characterHorizontalScale: 1
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
