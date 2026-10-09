@@ -7,7 +7,7 @@ Includes a playable demo scene, UI prefabs, 20 sample items, and debug switches 
 ## Features
 
 - Item icons, names, prices, and configurable quantities.
-- Category filters: Other, Weapon, Food, and Tool.
+- Category filters: Other, Weapon, Food, and Tool, You can easily Add more, and shop will work with them.
 - Shopping cart with quantity controls and a running total.
 - Money and inventory-capacity checks before checkout.
 - One purchase handler per shop, with separate success notifications.
