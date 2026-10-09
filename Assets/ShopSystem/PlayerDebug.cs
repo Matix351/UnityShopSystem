@@ -16,6 +16,12 @@ public class PlayerDebug : MonoBehaviour, IShopPurchaseHandler
 
     private void Start()
     {
+        if (_shopManager == null)
+        {
+            Debug.LogError("_shopManager is null", this);
+            return;
+        }
+
         _shopManager.RegisterPurchaseHandler(this);
         _shopManager.OnCanPurchaseMoneyEvent += CanPurchaseMoney;
         _shopManager.OnCanPurchaseInventorySlotsEvent += CanPurchaseInventorySlots;
