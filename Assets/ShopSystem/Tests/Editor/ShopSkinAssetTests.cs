@@ -5,13 +5,32 @@ using UnityEngine;
 
 internal static class ShopSkinTestPaths
 {
-    public const string Art = "Assets/ShopSystem/Sprites/IllustratedCream/PNG/";
+    public const string Art = "Assets/ShopSystem/Sprites/IllustratedCream/";
     public const string Parts = "Assets/ShopSystem/Prefabs/IllustratedCream/Variants/";
     public const string ScenePath = "Assets/ShopSystem/Scenes/ShopSystemIllustratedCream.unity";
 }
 
 public class ShopSkinAssetTests
 {
+    [TestCase("ItemSlot")]
+    [TestCase("CartItemSlot")]
+    [TestCase("TagButton")]
+    [TestCase("ShopManager")]
+    public void SkinHasNoInactiveInheritedPlaceholderChildren(string name)
+    {
+        var root = PrefabUtility.LoadPrefabContents(ShopSkinTestPaths.Parts + name + ".prefab");
+        try
+        {
+            foreach (Transform child in root.transform)
+                Assert.IsFalse(!child.gameObject.activeSelf &&
+                    PrefabUtility.GetCorrespondingObjectFromSource(child.gameObject) != null,
+                    name + " retains obsolete inherited child " + child.name);
+            foreach (var layout in root.GetComponents<UnityEngine.UI.LayoutGroup>())
+                Assert.IsTrue(layout.enabled, name + " retains an unused layout component");
+        }
+        finally { PrefabUtility.UnloadPrefabContents(root); }
+    }
+
     [TestCase("ShopManager", "ShopManager")]
     [TestCase("Canvas", "Canvas")]
     [TestCase("ItemSlot", "comp/ItemSlot")]

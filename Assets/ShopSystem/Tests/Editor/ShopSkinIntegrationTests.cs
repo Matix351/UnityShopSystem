@@ -42,7 +42,7 @@ public class ShopSkinIntegrationTests
         var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(ShopSkinTestPaths.Parts + "ShopManager.prefab"), root.transform);
         var manager = instance.GetComponent<ShopManager>();
         var stock = new[] { "Sword", "BattleAxe", "BluePotion", "Bread", "Pickaxe", "BrassKey" }
-            .Select(name => AssetDatabase.LoadAssetAtPath<SOShopItemExample>("Assets/ShopSystem/SO_ittems/SO_ShopItemExample/" + name + ".asset")).ToArray();
+            .Select(name => AssetDatabase.LoadAssetAtPath<SOShopItemExample>("Assets/ShopSystem/ScriptableObjects/SO_ShopItemExample/" + name + ".asset")).ToArray();
         Assert.That(stock.All(item => item != null));
         bool canBuy = true;
         manager.OnCanPurchaseMoneyEvent += _ => canBuy;

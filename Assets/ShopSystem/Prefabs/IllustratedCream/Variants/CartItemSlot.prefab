@@ -1814,8 +1814,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: CartItemSlot
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedComponents:
+    - {fileID: 2350846450306377524, guid: aa04422f42b20a24983f69699722f89a, type: 3}
+    m_RemovedGameObjects:
+    - {fileID: 8618600777756390319, guid: aa04422f42b20a24983f69699722f89a, type: 3}
+    - {fileID: 2835404684846408818, guid: aa04422f42b20a24983f69699722f89a, type: 3}
+    - {fileID: 4851695485992191961, guid: aa04422f42b20a24983f69699722f89a, type: 3}
+    - {fileID: 8441596159364492492, guid: aa04422f42b20a24983f69699722f89a, type: 3}
+    - {fileID: 5976249130696692323, guid: aa04422f42b20a24983f69699722f89a, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 6648054645716382085, guid: aa04422f42b20a24983f69699722f89a, type: 3}
       insertIndex: -1
