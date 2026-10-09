@@ -137,6 +137,9 @@ Register the handler and optional condition/notification callbacks when your com
 // Inside your component implementing IShopPurchaseHandler:
 private void OnEnable()
 {
+    if (shop == null)
+        return;
+        
     shop.RegisterPurchaseHandler(this);
     shop.OnCanPurchaseMoneyEvent += CanAfford;
     shop.OnCanPurchaseInventorySlotsEvent += CanStore;
