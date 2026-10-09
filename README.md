@@ -4,6 +4,26 @@ A Unity shop UI with a shopping cart, category filters, ScriptableObject items, 
 
 Includes a playable demo scene, UI prefabs, 20 sample items, and debug switches for testing purchase conditions. This repository is a Unity project, not a Unity Package Manager package.
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshots/shop-all-items.png" alt="Illustrated shop showing all item categories and the shopping cart" width="960" />
+  <br />
+  <em>All items and shopping cart</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/shop-weapons.png" alt="Illustrated shop filtered to weapons with the shopping cart visible" width="960" />
+  <br />
+  <em>Weapon category filter</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/shop-debug.png" alt="Original shop UI with cart validation and player debug switches" width="960" />
+  <br />
+  <em>Original UI and purchase-condition debugging</em>
+</p>
+
 ## Features
 
 - Item icons, names, prices, and configurable quantities.
