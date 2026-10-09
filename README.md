@@ -6,6 +6,13 @@ Includes a playable demo scene, UI prefabs, 20 sample items, and debug switches 
 
 ## Screenshots
 
+
+<p align="center">
+  <img src="docs/screenshots/shop-debug.png" alt="Original shop UI with cart validation and player debug switches" width="960" />
+  <br />
+  <em>Original UI and purchase-condition debugging</em>
+</p>
+
 <p align="center">
   <img src="docs/screenshots/shop-all-items.png" alt="Illustrated shop showing all item categories and the shopping cart" width="960" />
   <br />
@@ -16,12 +23,6 @@ Includes a playable demo scene, UI prefabs, 20 sample items, and debug switches 
   <img src="docs/screenshots/shop-weapons.png" alt="Illustrated shop filtered to weapons with the shopping cart visible" width="960" />
   <br />
   <em>Weapon category filter</em>
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/shop-debug.png" alt="Original shop UI with cart validation and player debug switches" width="960" />
-  <br />
-  <em>Original UI and purchase-condition debugging</em>
 </p>
 
 <p align="center">
@@ -136,6 +137,9 @@ Register the handler and optional condition/notification callbacks when your com
 // Inside your component implementing IShopPurchaseHandler:
 private void OnEnable()
 {
+    if (shop == null)
+        return;
+        
     shop.RegisterPurchaseHandler(this);
     shop.OnCanPurchaseMoneyEvent += CanAfford;
     shop.OnCanPurchaseInventorySlotsEvent += CanStore;
