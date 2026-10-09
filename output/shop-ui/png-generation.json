@@ -1,0 +1,86 @@
+{
+  "tool": "Built-in image_gen",
+  "reference": "C:/Users/CaveLord/.codex/generated_images/01a11d5e-3aba-7322-99e7-824d6eec4ded/exec-a2b2299e-6728-4605-9a0f-90207a1de331.png",
+  "assets": [
+    {
+      "name": "village-background",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-0aae7b20-6fdc-482d-a466-28fcb1955e36.png",
+      "prompt": "Use case: precise-object-edit. Reference supplied: the selected illustrated fantasy shop. Extract ONLY the softly blurred sunny medieval village scenery behind the UI. Reconstruct the scenery across the entire 16:9 landscape canvas. Remove the whole shop window, panels, title sign, items, coins and all UI completely. Remove ALL text on village signs and banners; leave plain blank banners. Keep the same warm watercolor illustrated village, lanterns, flowers, sunlight, depth of field, palette. No letters, symbols, words, or UI elements. This is the standalone scene background."
+    },
+    {
+      "name": "window-frame",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-a0cf89ab-3e26-4b2c-8b58-ef6f1bf06f41.png",
+      "prompt": "Use case: background-extraction. Reference supplied: selected illustrated fantasy shop. Extract/recreate ONLY the main cream parchment rounded rectangular window panel with fine dark brown double outline, soft inner cream highlights, subtle paper grain. Standalone square 1024 PNG sprite for Unity nine slicing. Panel fills canvas leaving 16px transparent padding, rounded corners 60px. Quiet uniform cream center, straight edges. No title board, village, cart panel, buttons, icons, text or decorations. Genuine transparent background outside corners. Match original reference main cream frame closely."
+    },
+    {
+      "name": "title-sign",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-f9c248f9-650e-41f6-94ab-d76a25c63ab3.png",
+      "prompt": "Use case: background-extraction. Reference supplied: selected fantasy shop. Extract ONLY the wooden title board from top center, complete with small green leaf clusters on both ends and subtle bolt in top left. Remove the word Shop completely: totally blank wooden board. Front orthographic standalone wide horizontal 3:1 sprite, thin transparent padding. Match reference brown wood grain and dark rounded border; don't include any other UI or scenery. Real transparent background."
+    },
+    {
+      "name": "gold-coin",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-c3a9ed28-5cdf-4e0f-8e03-ab430aa9b235.png",
+      "prompt": "Use case: background-extraction. Reference supplied: selected fantasy shop. Extract/recreate one gold coin like the coin beside the prices and total. Single circular bright golden currency icon, slightly tilted, honey yellow center, bright crescent shine, orange rim, dark brown outline, cozy hand painted game art matching reference. Center it large on a square transparent PNG with tight padding. No text, letters, currency glyphs or other objects. Genuine alpha transparency."
+    },
+    {
+      "name": "item-card",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-81e5c353-b35a-416f-a640-6a4558c67066.png",
+      "prompt": "Use case: background-extraction. Use the supplied shop concept as the visual reference. Isolate/recreate ONLY the specified empty UI sprite closely matching the original reference. Cozy hand-painted fantasy UI with restrained outlines and softly shaded edges. Front orthographic. No letters, words, numbers, symbols, icons, watermark or scene. True transparent background outside the shape. Tight transparent margin (16px). This is ONE production PNG sprite. The cream peach item-card panel behind Sword. Square canvas with softly rounded corners radius 45px and thin pale caramel outline. Very light warm cream peach center, quiet subtle texture suitable behind item icon and text. Suitable for nine slicing."
+    },
+    {
+      "name": "cart-panel",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-c83d8d1e-ae21-41ae-b303-e8484508b8b7.png",
+      "prompt": "Use case: background-extraction. Use the supplied shop concept as the visual reference. Isolate/recreate ONLY the specified empty UI sprite closely matching the original reference. Cozy hand-painted fantasy UI with restrained outlines and softly shaded edges. Front orthographic. No letters, words, numbers, symbols, icons, watermark or scene. True transparent background outside the shape. Tight transparent margin (16px). This is ONE production PNG sprite. The pale sage green large cart panel. Square canvas rounded corners radius 50px, slender sage gray outline, pale muted green uniform center. Nine slice friendly straight edges."
+    },
+    {
+      "name": "cart-row",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-6f0e5521-74d3-4745-9d9e-3edd65641744.png",
+      "prompt": "Use case: background-extraction. Use the supplied shop concept as the visual reference. Isolate/recreate ONLY the specified empty UI sprite closely matching the original reference. Cozy hand-painted fantasy UI with restrained outlines and softly shaded edges. Front orthographic. No letters, words, numbers, symbols, icons, watermark or scene. True transparent background outside the shape. Tight transparent margin (16px). This is ONE production PNG sprite. The ivory cart-row panel. Square canvas soft rounded corners radius 40px, very thin warm gray sage outline, flat warm ivory center. Nine slice friendly."
+    },
+    {
+      "name": "button-add",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-f67b012b-8769-48ac-a296-136c8a584730.png",
+      "prompt": "Use case: background-extraction. Use the supplied shop concept as the visual reference. Isolate/recreate ONLY the specified empty UI sprite closely matching the original reference. Cozy hand-painted fantasy UI with restrained outlines and softly shaded edges. Front orthographic. No letters, words, numbers, symbols, icons, watermark or scene. True transparent background outside the shape. Tight transparent margin (16px). This is ONE production PNG sprite. The orange Add button WITHOUT text. Wide 3:1 rounded rectangle with corner radius around 15 percent of height, warm muted orange face, light top bevel and darker terracotta lower edge and outline. NOT capsule shape."
+    },
+    {
+      "name": "button-purchase",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-c37e3595-d54a-43c7-a745-5f13f3807c35.png",
+      "prompt": "Use case: background-extraction. Use the supplied shop concept as the visual reference. Isolate/recreate ONLY the specified empty UI sprite closely matching the original reference. Cozy hand-painted fantasy UI with restrained outlines and softly shaded edges. Front orthographic. No letters, words, numbers, symbols, icons, watermark or scene. True transparent background outside the shape. Tight transparent margin (16px). This is ONE production PNG sprite. The green Purchase button WITHOUT text OR leaf ornament. Wide 3:1 rounded rectangle, dark olive outer outline, muted forest green face, inset sage border and soft upper left highlight, gently rounded corners about20percent height. Large blank center."
+    },
+    {
+      "name": "button-quantity",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-50f17215-4512-4cc8-a3b9-7bea2cce2993.png",
+      "prompt": "Use case: background-extraction. Use the supplied shop concept as the visual reference. Isolate/recreate ONLY the specified empty UI sprite closely matching the original reference. Cozy hand-painted fantasy UI with restrained outlines and softly shaded edges. Front orthographic. No letters, words, numbers, symbols, icons, watermark or scene. True transparent background outside the shape. Tight transparent margin (16px). This is ONE production PNG sprite. The small square sage green plus/minus button WITHOUT either symbol. Square rounded rectangle, corners 12percent, soft sage green face, muted dark sage outline and small upper left bevel. Keep square, NOT circular or oval. Empty center."
+    },
+    {
+      "name": "button-close",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-3f0f4220-ef6e-434c-8603-292be885f0f6.png",
+      "prompt": "Use case: background-extraction. Use the supplied shop concept as the visual reference. Isolate/recreate ONLY the specified empty UI sprite closely matching the original reference. Cozy hand-painted fantasy UI with restrained outlines and softly shaded edges. Front orthographic. No letters, words, numbers, symbols, icons, watermark or scene. True transparent background outside the shape. Tight transparent margin (16px). This is ONE production PNG sprite. The orange-red close button in the top right WITHOUT X. Square rounded rectangle, corners18percent, warm terracotta red face, dark brown outline and darker bottom bevel, little upper left shine. Empty center."
+    },
+    {
+      "name": "button-remove",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-1d6e8768-860b-46d7-968d-e4f2cf4d873b.png",
+      "prompt": "Use case: background-extraction. Use the supplied shop concept as the visual reference. Isolate/recreate ONLY the specified empty UI sprite closely matching the original reference. Cozy hand-painted fantasy UI with restrained outlines and softly shaded edges. Front orthographic. No letters, words, numbers, symbols, icons, watermark or scene. True transparent background outside the shape. Tight transparent margin (16px). This is ONE production PNG sprite. The small circular ivory remove item button at right of each cart row WITHOUT X. A single small round cream beige disk with fine gray taupe outline, subtle bevel. Empty center. Circular, not oval."
+    },
+    {
+      "name": "category-tab",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-688e7e2d-2402-4e33-acc4-8c43799df8a5.png",
+      "prompt": "Extract the blank pale sage category-tab button from supplied shop concept. One wide 3:1 softly rounded rectangle (corners10percent height), light sage cream fill, simple muted gray sage thin outline and slight highlight. Uniform empty center. No text, no icons. Tight16px padding. Real transparent outside. Nine slice friendly. Hand painted subtly textured match reference."
+    },
+    {
+      "name": "quantity-field",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-04a3760b-f0aa-4b44-8b7f-2048a70eaf99.png",
+      "prompt": "Extract the blank ivory quantity number input box from supplied shop concept. One wide 2:1 softly rounded rectangle, light warm ivory fill, simple beige outline, corner radius12percentheight. NO digits, arrows, symbols or text. Empty center. Tight16px padding, genuinely transparent outside, nine slice friendly."
+    },
+    {
+      "name": "leaf-ornament",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-66ae389c-fbe9-41ab-bc05-bbec24ae9d62.png",
+      "prompt": "Extract the little olive gold green three-leaf sprig decorating the green Purchase button in the supplied concept. Only one small three-leaf decorative sprig, slanting upward. Flat softly painted muted olive gold leaves, no other artwork, no background, no text. Center large in square canvas, real transparent background."
+    },
+    {
+      "name": "cart-icon",
+      "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-0fbb050c-3f5d-4620-bbdd-eb6119c5a68d.png",
+      "prompt": "Extract the dark forest green shopping-cart pictogram beside Your Cart in supplied concept. Only one icon with basket, slanted handle and two wheels. Simple bold silhouette, softened painted edges matching cozy reference, no surrounding panel or text. Large centered on square transparent canvas."
+    }
+  ]
+}

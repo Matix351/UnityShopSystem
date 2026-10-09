@@ -1,0 +1,4 @@
+Passed: 12
+Failed: 7
+Skipped: 0
+Failed(Child)

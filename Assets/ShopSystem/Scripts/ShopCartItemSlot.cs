@@ -1,11 +1,14 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShopCartItemSlot : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _countTV;
     [SerializeField] private TextMeshProUGUI _nameTV;
     [SerializeField] private TextMeshProUGUI _priceTV;
+    [SerializeField] private Image _iconImage;
+    [SerializeField] private TextMeshProUGUI _unitPriceTV;
 
     private ShopItem _item;
     public ShopItem Item => _item;
@@ -18,6 +21,8 @@ public class ShopCartItemSlot : MonoBehaviour
         _item = new ShopItem(item);
         _manager = manager;
         _nameTV.SetText(item.ItemSO.Name);
+        if (_iconImage != null) _iconImage.sprite = item.ItemSO.image;
+        if (_unitPriceTV != null) _unitPriceTV.SetText(_item.pricePerUnit.ToString());
         updateCountTVs();
         _manager.OnCartItemDataChange(this);
     }

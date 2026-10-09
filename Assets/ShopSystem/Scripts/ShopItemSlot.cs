@@ -48,6 +48,26 @@ public class ShopItemSlot : MonoBehaviour
         addItemToCart();
     }
 
+    // The illustrated UI keeps a quantity field visible beside its Add button.
+    public void AddSelectedQuantity()
+    {
+        if (string.IsNullOrWhiteSpace(_inputAmmountTV.text))
+            AddToCartOneItem();
+        else
+            AddToCartMultipleItems();
+        _inputAmmountTV.text = "1";
+    }
+
+    public void IncreaseSelectedQuantity() => ChangeSelectedQuantity(1);
+    public void DecreaseSelectedQuantity() => ChangeSelectedQuantity(-1);
+
+    private void ChangeSelectedQuantity(int delta)
+    {
+        int.TryParse(_inputAmmountTV.text, out int count);
+        int maximum = _shopManager != null ? _shopManager.GetMaxQuantityPerItem : 999;
+        _inputAmmountTV.text = Math.Max(1L, Math.Min((long)maximum, (long)count + delta)).ToString();
+    }
+
     public void AddToCartMultipleItems()
     {
         if(setPlayerInputAmmount())

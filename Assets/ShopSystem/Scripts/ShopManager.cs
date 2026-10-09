@@ -148,6 +148,10 @@ public class ShopManager : MonoBehaviour
 
     public void OnTagClick(ITEM_TYPE type, bool all = false)
     {
+        foreach (ShopTagButton tag in _tagViewContent.GetComponentsInChildren<ShopTagButton>())
+            tag.UpdateSelection(type, all);
+        var itemScroll = _itemsSlotViewContent.GetComponentInParent<UnityEngine.UI.ScrollRect>();
+        if (itemScroll != null) itemScroll.verticalNormalizedPosition = 1;
         if(all)
         {
             foreach (ShopItemSlot slot in _itemSlots)
