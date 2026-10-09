@@ -1,3 +1,0 @@
-PASS: Both scenes use the same CanvasDebug and nested ShopExample prefab assets.
-PASS: ShopDebug, PlayerDebug, and OpenShop button bindings are preserved.
-PASS: Original and illustrated shop appearances remain separate.

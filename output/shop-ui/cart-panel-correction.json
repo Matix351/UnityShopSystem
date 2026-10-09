@@ -1,5 +1,0 @@
-{
-  "tool": "Built-in image_gen",
-  "prompt": "Edit target: this isolated pale sage UI panel. Repair its center: the ENTIRE interior must be fully opaque uniform pale sage green paper (#d6ddba), with only extremely subtle paper grain. Remove the transparent/white hole and all dark cloudy blotches. Keep the thin sage outline, rounded corners, straight edges and outside alpha transparency unchanged. This is one filled rectangular nine-slice Unity panel. No text or symbols. Only pixels OUTSIDE the panel perimeter are transparent; every pixel INSIDE is fully opaque. Pale sage flat center, no glow, no hole, no vignette.",
-  "source": "C:\\Users\\CaveLord\\.codex\\generated_images\\01a11d5e-3aba-7322-99e7-824d6eec4ded\\exec-fca9eca7-a943-48b8-822f-506d2bfcbf25.png"
-}

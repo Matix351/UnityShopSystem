@@ -925,11 +925,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
-  cloudProjectId: fc0a5144-aa93-4d43-9877-d3746570eab5
+  cloudProjectId:
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: UnityShopSystem
-  organizationId: mateusz-ciszek
+  projectName:
+  organizationId:
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

@@ -24,20 +24,17 @@ Includes a playable demo scene, UI prefabs, 20 sample items, and debug switches 
   <em>Original UI and purchase-condition debugging</em>
 </p>
 
-<table align="center">
-  <tr>
-    <td align="center" width="50%">
-      <img src="docs/screenshots/purchase-handler-registration.png" alt="Demo Start method registering the purchase handler and subscribing to purchase events" width="480" />
-      <br />
-      <em>Purchase-handler registration and event subscriptions</em>
-    </td>
-    <td align="center" width="50%">
-      <img src="docs/screenshots/purchase-success.png" alt="Console purchase result: 12 apples, 33 maces, and 1 hammer, totaling 6580, with purchase successful set to true" width="480" />
-      <br />
-      <em>Successful purchase in the Console</em>
-    </td>
-  </tr>
-</table>
+<p align="center">
+  <img src="docs/screenshots/purchase-handler-registration.png" alt="Demo Start method registering the purchase handler and subscribing to purchase events" width="960" />
+  <br />
+  <em>Purchase-handler registration and event subscriptions</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/purchase-success.png" alt="Console purchase result: 12 apples, 33 maces, and 1 hammer, totaling 6580, with purchase successful set to true" width="960" />
+  <br />
+  <em>Successful purchase in the Console</em>
+</p>
 
 ## Features
 
