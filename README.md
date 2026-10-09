@@ -61,7 +61,7 @@ Open the full project to restore its package dependencies from [`Packages/manife
 1. Clone or download this repository.
 2. In Unity Hub, add the repository folder as an existing project.
 3. Open it with Unity 6000.3.11f1 and let the initial import finish.
-4. Open [`ShopSystemSampleScene.unity`](Assets/ShopSystem/ShopSystemSampleScene.unity).
+4. Open [`ShopSystemSampleScene.unity`](Assets/ShopSystem/Scenes/ShopSystemSampleScene.unity).
 5. Enter Play Mode and click **OpenShop**.
 6. Use the player debug switches to simulate sufficient money and inventory space.
 7. Add items, change quantities, filter categories, and purchase the cart. Successful demo purchases are logged to the Console.
@@ -70,15 +70,15 @@ Open the full project to restore its package dependencies from [`Packages/manife
 
 | Path under `Assets/ShopSystem/` | Contents |
 | --- | --- |
-| `Scripts/` | Shop manager, item/cart views, category buttons, and purchase-handler interface. |
+| `Scripts/` | Shop manager, item/cart views, category buttons, interfaces, and enums. |
 | `Prefabs/` | Shop UI, player debug panel, and component prefabs. |
-| `SO_ittems/` | Sample item class and item assets. |
-| `Sprites/` | Sample item icons. |
+| `Scenes/` | Original and Illustrated Cream demo scenes. |
+| `ScriptableObjects/` | `SOShopItemExample.cs` and sample item assets in `SO_ShopItemExample/`. |
+| `Sprites/` | Shared sample item icons. |
 | `InventorySystem(differentModule)/` | Shared item/slot data classes from a separate inventory module. |
-| `Tests/Editor/` | Unity regression tests. |
+| `Tests/Editor/` | Shop regression tests, prefab checks, and scene/UI integration tests. |
 | `ShopDebug.cs` | Opens the demo shop with its assigned item list. |
 | `PlayerDebug.cs` | Simulates player purchase conditions and handles debug purchases. |
-| `PlayerDebugToggleBindings.cs` | Connects the debug switches to player state. |
 
 ## Create an item
 
@@ -121,7 +121,7 @@ Opening a shop resets its cart. To clear the cart without closing the shop, call
 
 ## Connect your inventory and currency systems
 
-Implement [`IShopPurchaseHandler`](Assets/ShopSystem/Scripts/IShopPurchaseHandler.cs) on your player or another component responsible for purchases. The current interface requires both methods:
+Implement [`IShopPurchaseHandler`](Assets/ShopSystem/Scripts/Interfaces.cs) on your player or another component responsible for purchases. The current interface requires both methods:
 
 ```csharp
 bool TryPurchase(inventorySlotData[] items, int totalPrice);
