@@ -37,6 +37,6 @@ public class ShopOriginalSceneSmokeTests
     public IEnumerator StopOriginal()
     {
         yield return new ExitPlayMode();
-        EditorSceneManager.OpenScene(IllustratedCreamShopBuilder.ScenePath);
+        EditorSceneManager.OpenScene(ShopSkinTestPaths.ScenePath);
     }
 }

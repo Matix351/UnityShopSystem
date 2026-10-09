@@ -15,5 +15,5 @@ public static class SpriteExtraction {
  }
 }
 "@
-Get-ChildItem -LiteralPath Assets/ShopSystem/Art/IllustratedCream/PNG -Filter *.png | Where-Object Name -ne 'village-background.png' | ForEach-Object { [SpriteExtraction]::Trim($_.FullName) }
+Get-ChildItem -LiteralPath Assets/ShopSystem/Sprites/IllustratedCream/PNG -Filter *.png | Where-Object Name -ne 'village-background.png' | ForEach-Object { [SpriteExtraction]::Trim($_.FullName) }
 

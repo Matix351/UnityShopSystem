@@ -39,7 +39,7 @@ public class ShopSkinIntegrationTests
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1920, 1080);
         scaler.matchWidthOrHeight = .5f;
-        var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(IllustratedCreamShopBuilder.Parts + "ShopManager.prefab"), root.transform);
+        var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(ShopSkinTestPaths.Parts + "ShopManager.prefab"), root.transform);
         var manager = instance.GetComponent<ShopManager>();
         var stock = new[] { "Sword", "BattleAxe", "BluePotion", "Bread", "Pickaxe", "BrassKey" }
             .Select(name => AssetDatabase.LoadAssetAtPath<SOShopItemExample>("Assets/ShopSystem/SO_ittems/SO_ShopItemExample/" + name + ".asset")).ToArray();

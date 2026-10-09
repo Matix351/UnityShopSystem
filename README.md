@@ -24,6 +24,12 @@ Includes a playable demo scene, UI prefabs, 20 sample items, and debug switches 
   <em>Original UI and purchase-condition debugging</em>
 </p>
 
+<p align="center">
+  <img src="docs/screenshots/purchase-success.png" alt="Console purchase result: 12 apples, 33 maces, and 1 hammer, totaling 6580, with purchase successful set to true" width="400" />
+  <br />
+  <em>Successful demo purchase logged to the Console</em>
+</p>
+
 ## Features
 
 - Item icons, names, prices, and configurable quantities.

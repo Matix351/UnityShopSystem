@@ -16,7 +16,7 @@ public class ShopSkinSceneIntegrationTests
     [UnitySetUp]
     public IEnumerator OpenDemo()
     {
-        EditorSceneManager.OpenScene(IllustratedCreamShopBuilder.ScenePath);
+        EditorSceneManager.OpenScene(ShopSkinTestPaths.ScenePath);
         yield return new EnterPlayMode();
     }
 

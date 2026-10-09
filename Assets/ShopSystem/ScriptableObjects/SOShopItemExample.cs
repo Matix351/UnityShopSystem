@@ -13,16 +13,3 @@ public class SOShopItemExample : SOItemData, IItemTradeable, IItemType
 }
 
 
-public interface IItemTradeable
-{
-    public int Value { get; }
-
-}
-
-public interface IItemType
-{
-    public ITEM_TYPE Type { get; }
-
-}
-
-public enum ITEM_TYPE { Other, Weapon, Food, Tool}
