@@ -23,6 +23,8 @@ public class PlayerDebug : MonoBehaviour, IShopPurchaseHandler
        
         StateChanged += _shopManager.updatePlayerPurchaseConditions;
     }
+
+
     private void OnDisable()
     {
         if (_shopManager != null)
