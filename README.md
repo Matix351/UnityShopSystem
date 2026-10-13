@@ -154,9 +154,8 @@ The signatures above describe the contract; provide method bodies in your implem
 
 Both condition checks must pass. They run when cart data or handler state changes and again when the purchase button is clicked. Keep the condition checks free of transaction side effects; commit changes only in `TryPurchase`.
 
-Handler registration and removal are private implementation details of `ShopManager`. Pass the handler to `openShop` and let `closeShop` disconnect it. There are no separate money or inventory condition events to subscribe to.
-
-Empty carts and checkout without a valid handler are rejected. A failed purchase retains the cart; a successful purchase clears it and raises `OnPurchaseCompleted(inventorySlotData[] items, int totalPrice)`. This optional event is for UI, sound, quests, or logging after the transaction, not for deducting money or granting items again. There is no `onPurchase` method in the handler interface.
+Handler registration and removal are private implementation details of `ShopManager`. Pass the handler to `openShop` and let `closeShop` disconnect it.
+Empty carts and checkout without a valid handler are rejected. A failed purchase retains the cart; a successful purchase clears it and raises `OnPurchaseCompleted(inventorySlotData[] items, int totalPrice)`. This optional event is for UI, quests, or logging after the transaction, not for deducting money or granting items again.
 
 The provided `PlayerDebug` simulates the two conditions, raises `StateChanged` from its debug setters, and logs successful purchases inside `TryPurchase`. It does not implement an inventory or wallet, and `ShopDebug` passes it to the manager when opening the shop.
 
