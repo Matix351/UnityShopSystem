@@ -13,7 +13,7 @@ public interface IItemType
 
 public interface IPurchaseHandler
 {
-    //invoke this everyTime state is changed
+    //invoke this everyTime state(money/slots) is changed
     public event System.Action StateChanged;
     public bool CanPurchaseMoney(int price);
     public bool CanPurchaseInventorySlots(inventorySlotData[] cartItems);
