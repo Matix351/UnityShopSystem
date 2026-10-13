@@ -1,19 +1,15 @@
 using UnityEngine;
 using static UnityEditor.Progress;
 
-//public class PlayerDebug : MonoBehaviour, IcanPurchaseInventorySlots, ICanPurchaseMoney
 public class PlayerDebug : MonoBehaviour, IPurchaseHandler
 {
     [SerializeField] private ShopManager _shopManager;
     [SerializeField] private bool _hasEnoughInventorySpace;
     [SerializeField] private bool _hasEnougMoney;
-    public bool HasEnoughMoney => _hasEnougMoney;
-    public bool HasEnoughInventorySpace => _hasEnoughInventorySpace;
     public event System.Action StateChanged;
 
     #region mainLogic
     //Main Logic
-    //------------------------------------------------------------
 
 
     public bool CanPurchaseMoney(int price)
@@ -42,7 +38,6 @@ public class PlayerDebug : MonoBehaviour, IPurchaseHandler
     }
 
 
-    //------------------------------------------------------------
     #endregion
 
     private void generatePurchaseLog(inventorySlotData[] cartItems, int price)
@@ -62,6 +57,8 @@ public class PlayerDebug : MonoBehaviour, IPurchaseHandler
     }
 
     #region debugToolsSetup
+    public bool HasEnoughMoney => _hasEnougMoney;
+    public bool HasEnoughInventorySpace => _hasEnoughInventorySpace;
 
     private void OnValidate()
     {
