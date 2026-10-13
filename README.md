@@ -71,13 +71,17 @@ Open the full project to restore its package dependencies from [`Packages/manife
 
 | Path under `Assets/ShopSystem/` | Contents |
 | --- | --- |
-| `Scripts/` | Shop manager, item/cart views, category buttons, interfaces, and enums. |
-| `Prefabs/` | Shop UI, player debug panel, and component prefabs. |
+| `Scripts/` | Shop manager, item/cart views, category buttons, canvas scaling, trade/purchase interfaces, and enums. |
+| `Prefabs/_Base/` | Original shop and canvas prefabs, shared demo/debug prefabs, and item/cart/category components in `comp/`. |
+| `Prefabs/IllustratedCream/` | Illustrated shop and canvas variants, item/cart/category variants, title material, and standalone buttons in `Controls/`. |
 | `Scenes/` | Original and Illustrated Cream demo scenes. |
 | `ScriptableObjects/` | `SOShopItemExample.cs` and sample item assets in `SO_ShopItemExample/`. |
 | `Sprites/` | Shared sample item icons. |
+| `Sprites/IllustratedCream/` | Illustrated shop backgrounds, panels, buttons, and decorative artwork. |
+| `InventorySystem(differentModule)/` | `IItemData` interface and `inventorySlotData` helpers from a separate inventory module. |
 | `ShopDebug.cs` | Opens the demo shop with its assigned item list. |
 | `PlayerDebug.cs` | Simulates player purchase conditions and handles debug purchases. |
+| `PlayerDebugToggleBindings.cs` | Connects the debug switches to player state. |
 
 ## Create an item
 
@@ -85,7 +89,7 @@ Open the full project to restore its package dependencies from [`Packages/manife
 2. Set its name, sprite, price (`Value`), category (`Type`), and maximum stack amount.
 3. Add the asset to the `ShopDebug` item list or pass it to `ShopManager.openShop` from your own code.
 
-`SOShopItemExample` extends `SOItemData` and implements:
+[`SOShopItemExample`](Assets/ShopSystem/ScriptableObjects/SOShopItemExample.cs) extends `ScriptableObject` and implements:
 
 - `IItemData`: supplies `Name`, `image`, and `maxStackAmmount`.
 - `IItemTradeable`: supplies the integer price through `Value`.
