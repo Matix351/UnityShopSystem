@@ -28,7 +28,7 @@ Includes two demo scenes, original and Illustrated Cream UI prefabs, 20 sample i
 <p align="center">
   <img src="docs/screenshots/purchase-handler-registration.png" alt="Demo Start method registering the purchase handler and subscribing to purchase events" width="960" />
   <br />
-  <em>Purchase-handler registration and event subscriptions</em>
+  <em>Earlier registration example; see the current openShop setup below</em>
 </p>
 
 <p align="center">
@@ -43,7 +43,7 @@ Includes two demo scenes, original and Illustrated Cream UI prefabs, 20 sample i
 - Category filters: Other, Weapon, Food, and Tool. Extend `ITEM_TYPE` in `Scripts/Enums.cs` to add categories; the shop creates tabs for categories present in its item list.
 - Shopping cart with quantity controls and a running total.
 - Money and inventory-capacity checks before checkout.
-- One purchase handler per shop, with separate success notifications.
+- A purchase handler supplied when opening the shop, with automatic state-change updates and separate success notifications.
 - `IItemData` item definitions with per-item inventory stack sizes and sample ScriptableObject assets.
 - Separate player debug logic and toggle bindings.
 
@@ -63,7 +63,7 @@ Open the full project to restore its package dependencies from [`Packages/manife
 2. In Unity Hub, add the repository folder as an existing project.
 3. Open it with Unity 6000.3.11f1 and let the initial import finish.
 4. Open [`ShopSystemSampleScene.unity`](Assets/ShopSystem/Scenes/ShopSystemSampleScene.unity) for the original UI or [`ShopSystemIllustratedCream.unity`](Assets/ShopSystem/Scenes/ShopSystemIllustratedCream.unity) for the illustrated UI.
-5. Enter Play Mode and click **OpenShop**.
+5. Ensure `ShopDebug` has its shop manager, item list, and `Player` (`PlayerDebug`) reference assigned, then enter Play Mode and click **OpenShop**.
 6. Use the player debug switches to simulate sufficient money and inventory space.
 7. Add items, change quantities, filter categories, and purchase the cart. Successful demo purchases are logged to the Console.
 
@@ -79,7 +79,7 @@ Open the full project to restore its package dependencies from [`Packages/manife
 | `Sprites/` | Shared sample item icons. |
 | `Sprites/IllustratedCream/` | Illustrated shop backgrounds, panels, buttons, and decorative artwork. |
 | `InventorySystem(differentModule)/` | `IItemData` interface and `inventorySlotData` helpers from a separate inventory module. |
-| `ShopDebug.cs` | Opens the demo shop with its assigned item list. |
+| `ShopDebug.cs` | Opens the demo shop with its assigned item list and player purchase handler. |
 | `PlayerDebug.cs` | Simulates player purchase conditions and handles debug purchases. |
 | `PlayerDebugToggleBindings.cs` | Connects the debug switches to player state. |
 
@@ -99,7 +99,7 @@ Custom item classes must implement [`IItemData`](Assets/ShopSystem/InventorySyst
 
 ## Open and close a shop
 
-Assign the shop manager and item assets in the Inspector. The optional close callback can restore player controls or other UI state.
+Pass the items and an `IPurchaseHandler` each time you open the shop. The optional close callback can restore player controls or other UI state. Assign the shop manager, sample item assets, and demo player in the Inspector:
 
 ```csharp
 using UnityEngine;
@@ -108,71 +108,57 @@ public class OpenShopExample : MonoBehaviour
 {
     [SerializeField] private ShopManager shop;
     [SerializeField] private SOShopItemExample[] items;
+    [SerializeField] private PlayerDebug player;
 
     public void Open()
     {
-        shop.openShop(items, () => Debug.Log("Shop closed"));
+        shop.openShop(items, player, () => Debug.Log("Shop closed"));
+        shop.OnPurchaseCompleted += HandlePurchaseCompleted;
     }
 
     public void Close()
     {
         shop.closeShop();
     }
+
+    private void HandlePurchaseCompleted(inventorySlotData[] purchasedItems, int totalPrice)
+    {
+        Debug.Log($"Purchased {purchasedItems.Length} item types for {totalPrice}.");
+    }
 }
 ```
 
-`openShop(IItemData[] items, UnityAction onShopClosedAction = null)` also accepts custom item implementations created at runtime. The example uses a concrete ScriptableObject array so sample assets can be assigned in the Inspector, just like `ShopDebug`.
+The signature is `openShop(IItemData[] items, IPurchaseHandler purchaseHandler, UnityAction onShopClosedAction = null)`. It accepts custom item implementations created at runtime; the concrete ScriptableObject array in this example allows sample assets to be assigned in the Inspector. Replace `PlayerDebug` with your own component implementing `IPurchaseHandler` for a real integration.
 
-Opening or closing a shop clears its cart. Closing hides the shop and invokes the optional close callback. To clear the cart without closing the shop, call `clearCart()`.
+Opening clears the cart and connects the handler's `StateChanged` event. Closing clears the cart, hides the shop, disconnects the handler, clears all `OnPurchaseCompleted` listeners, and invokes the close callback. Subscribe to completion notifications each time you open, as shown above. To clear the cart while keeping the shop open and the handler connected, call `clearCart()`.
+
+Pair each successful `openShop` call with one `closeShop` call. Close an existing session before opening another; repeated opens with the same handler currently add duplicate state-change subscriptions, and closing without a registered handler is not supported.
 
 ## Connect your inventory and currency systems
 
-Implement [`IShopPurchaseHandler`](Assets/ShopSystem/Scripts/Interfaces.cs) on your player or another component responsible for purchases. The current interface requires both methods:
+Implement [`IPurchaseHandler`](Assets/ShopSystem/Scripts/Interfaces.cs) on the player or another object responsible for purchases:
 
 ```csharp
-bool TryPurchase(inventorySlotData[] items, int totalPrice);
-void onPurchase(inventorySlotData[] cartItems, int price);
+public event System.Action StateChanged;
+public bool CanPurchaseMoney(int price);
+public bool CanPurchaseInventorySlots(inventorySlotData[] cartItems);
+public bool TryPurchase(inventorySlotData[] items, int totalPrice);
 ```
 
-`TryPurchase` must check current funds and inventory capacity, then commit the money deduction and item grant together. Return `true` only when the whole purchase succeeds. Return `false` without modifying money or inventory if it cannot complete.
+The signatures above describe the contract; provide method bodies in your implementation.
 
-Register the handler and optional condition/notification callbacks when your component becomes active, and remove them when it becomes inactive:
+- `CanPurchaseMoney` checks whether the current funds cover the total price.
+- `CanPurchaseInventorySlots` checks whether all cart quantities fit in the inventory.
+- `TryPurchase` rechecks funds and capacity, then commits the money deduction and item grant together. Return `false` without changing either if the transaction cannot complete.
+- Raise `StateChanged` whenever funds or inventory capacity change, for example with `StateChanged?.Invoke()` inside your handler. While the shop is open, the manager automatically refreshes its purchase-condition messages.
 
-```csharp
-// Inside your component implementing IShopPurchaseHandler:
-private void OnEnable()
-{
-    if (shop == null)
-        return;
+Both condition checks must pass. They run when cart data or handler state changes and again when the purchase button is clicked. Keep the condition checks free of transaction side effects; commit changes only in `TryPurchase`.
 
-    shop.RegisterPurchaseHandler(this);
-    shop.OnCanPurchaseMoneyEvent += CanAfford;
-    shop.OnCanPurchaseInventorySlotsEvent += CanStore;
-    shop.OnPurchaseCompleted += onPurchase;
-}
+Handler registration and removal are private implementation details of `ShopManager`. Pass the handler to `openShop` and let `closeShop` disconnect it. There are no separate money or inventory condition events to subscribe to.
 
-private void OnDisable()
-{
-    if (shop == null)
-        return;
+Empty carts and checkout without a valid handler are rejected. A failed purchase retains the cart; a successful purchase clears it and raises `OnPurchaseCompleted(inventorySlotData[] items, int totalPrice)`. This optional event is for UI, sound, quests, or logging after the transaction, not for deducting money or granting items again. There is no `onPurchase` method in the handler interface.
 
-    shop.UnregisterPurchaseHandler(this);
-    shop.OnCanPurchaseMoneyEvent -= CanAfford;
-    shop.OnCanPurchaseInventorySlotsEvent -= CanStore;
-    shop.OnPurchaseCompleted -= onPurchase;
-}
-```
-
-Here, `shop` is your assigned `ShopManager`, `CanAfford(int price)` returns whether the player has enough money, and `CanStore(inventorySlotData[] items)` returns whether the items fit. Implement these methods using your own systems.
-
-- Only one purchase handler can be registered. Disable or remove the demo `PlayerDebug` before registering your own handler with the same shop.
-- All subscribed condition callbacks must approve. Without a condition subscriber, that particular preview check defaults to approval; the transaction handler must still validate the purchase.
-- Call `shop.updatePlayerPurchaseConditions()` when money or inventory space changes to refresh the displayed purchase conditions. Checkout also rechecks them when Buy is clicked.
-- Empty carts and checkout without a handler are rejected. A failed purchase retains the cart; a successful purchase clears it.
-- `OnPurchaseCompleted` is for sound, UI, quests, or logging after success. Do not deduct money or grant the same items again in a notification listener.
-- **`onPurchase` is not called directly by `ShopManager`.** Subscribe it to `OnPurchaseCompleted`, as shown above, if you want it to receive the success notification. Registering the handler alone only connects `TryPurchase`.
-
-The provided `PlayerDebug` is a simulation, not a real inventory adapter.
+The provided `PlayerDebug` simulates the two conditions, raises `StateChanged` from its debug setters, and logs successful purchases inside `TryPurchase`. It does not implement an inventory or wallet, and `ShopDebug` passes it to the manager when opening the shop.
 
 ## Cart limits versus inventory stacks
 
@@ -186,7 +172,7 @@ Purchase callbacks receive one `inventorySlotData` entry per cart item: `item` e
 
 Start by running the included demo, then copy `Assets/ShopSystem` with its `.meta` files into your project. Ensure the UI, TextMesh Pro, and current source dependencies are available, and bring over any fonts or other assets referenced by the prefabs.
 
-Use the sample scene as a wiring reference: the shop needs its view prefabs, content transforms, and text fields assigned. Add the shop UI to a Canvas with a working EventSystem, register your purchase handler, and open it with your item list. If your project already defines equivalent inventory data types, adapt these references before combining the modules to avoid duplicate class names.
+Use the sample scene as a wiring reference: the shop needs its view prefabs, content transforms, and text fields assigned. Add the shop UI to a Canvas with a working EventSystem, open it with your item list and purchase handler. If your project already defines equivalent inventory data types, adapt these references before combining the modules to avoid duplicate class names.
 
 
 ## License

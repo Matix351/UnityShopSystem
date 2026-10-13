@@ -17,11 +17,13 @@ This folder contains the item-data interface and slot data helper used by the sh
 
 The integrating inventory system is responsible for checking available space, distributing purchased quantities across stacks, and adding the items after a successful purchase. `PlayerDebug` only simulates purchase checks and logs the result; it does not implement an inventory or wallet.
 
-Implement `IShopPurchaseHandler.TryPurchase(items, totalPrice)` and register it with `ShopManager.RegisterPurchaseHandler(handler)`. Only one handler can own purchases; registering a different handler before unregistering the current one throws an exception. Call `UnregisterPurchaseHandler(handler)` when its owner is disabled or destroyed.
+Implement `IPurchaseHandler` with `CanPurchaseMoney(int price)`, `CanPurchaseInventorySlots(inventorySlotData[] cartItems)`, `TryPurchase(inventorySlotData[] items, int totalPrice)`, and an `Action StateChanged` event. Pass it to `ShopManager.openShop(items, handler, optionalCloseCallback)`. Registration is private to the manager; `closeShop()` disconnects the handler. Close the current shop session before opening another.
+
+Raise `StateChanged` when funds or inventory capacity change. The manager subscribes while the shop is open and calls both condition checks to refresh its purchase messages. Checkout also calls both checks before attempting the transaction.
 
 The handler must recheck current funds and capacity and commit money and inventory changes together. Returning `false` must leave both unchanged. The shop keeps the cart on failure and clears it on success. With no handler, checkout is refused.
 
-Subscribe to `OnPurchaseCompleted` for UI, sound, quests, or logging. This notification runs after a successful transaction and cart reset; listeners do not approve or perform the purchase. `PlayerDebug` registers in `Start` and cleans up in `OnDisable`; use paired `OnEnable`/`OnDisable` registration in integrations that disable and re-enable the component.
+Subscribe to `OnPurchaseCompleted` for UI, sound, quests, or logging. This notification runs after a successful transaction and cart reset; listeners do not approve or perform the purchase. Closing the shop clears these listeners, so subscribe again for each new session. `ShopDebug` passes its assigned `PlayerDebug` to `openShop`; the demo handler logs a successful purchase inside `TryPurchase`.
 
 ## Stack sizes and cart quantities
 

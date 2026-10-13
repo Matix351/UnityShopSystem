@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -30,11 +29,11 @@ public class ShopManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _cartPriceTV;
     [SerializeField] private TextMeshProUGUI _cartErrorBuyTV;
 
-    private IShopPurchaseHandler _purchaseHandler;
+    private IPurchaseHandler _purchaseHandler;
     private bool _purchaseInProgress;
     public event Action<inventorySlotData[], int> OnPurchaseCompleted;
 
-    public void RegisterPurchaseHandler(IShopPurchaseHandler handler)
+    private void RegisterPurchaseHandler(IPurchaseHandler handler)
     {
         if (handler == null)
             throw new ArgumentNullException(nameof(handler));
@@ -42,28 +41,35 @@ public class ShopManager : MonoBehaviour
             && !(_purchaseHandler is UnityEngine.Object owner && owner == null))
             throw new InvalidOperationException("The shop already has a purchase handler.");
         _purchaseHandler = handler;
+        _purchaseHandler.StateChanged += updatePlayerPurchaseConditions;
     }
 
-    public void UnregisterPurchaseHandler(IShopPurchaseHandler handler)
+    private void UnregisterPurchaseHandler(IPurchaseHandler handler= null)
     {
-        if (ReferenceEquals(_purchaseHandler, handler))
+        if(handler == null)
+        {
+            _purchaseHandler.StateChanged -= updatePlayerPurchaseConditions;
             _purchaseHandler = null;
+            return;
+
+        }
+        else if (ReferenceEquals(_purchaseHandler, handler))
+
+        {
+            _purchaseHandler.StateChanged -= updatePlayerPurchaseConditions;
+            _purchaseHandler = null;
+
+        }
     }
-    //canPurchaseEvent
-    public delegate bool CanPurchaseMoneyDelegate(int price);
-    public event CanPurchaseMoneyDelegate OnCanPurchaseMoneyEvent;
-    public delegate bool CanPurchaseInventorySlotsDelegate(inventorySlotData[] cartItems);
-    public event CanPurchaseInventorySlotsDelegate OnCanPurchaseInventorySlotsEvent;
-    //openShopEvent
-    //public delegate void shopOpenEvent(bool isOpen);
-    //public event shopOpenEvent OnShopOpenEvent;
+
+
 
     UnityAction _onShopCloseAction = null;
     private bool _canPlayerPurchase = false;
     private int _cartPrice;
 
 
-    public void openShop(IItemData[] items, UnityAction onShopClosedAction = null)
+    public void openShop(IItemData[] items,IPurchaseHandler purchaseHandler, UnityAction onShopClosedAction = null)
     {
         Debug.Log("MATI: ShopManager go");
         for(int i=0; i<items.Length; i++)
@@ -75,6 +81,9 @@ public class ShopManager : MonoBehaviour
             }
 
         }
+
+        RegisterPurchaseHandler(purchaseHandler);
+
         Debug.Log("MATI: ShopManager AfterCheck");
         _onShopCloseAction = onShopClosedAction;
         clearCart();
@@ -134,13 +143,13 @@ public class ShopManager : MonoBehaviour
     //TODO: Clear the cart and shop items, and reset all state so the shop is empty.
     public void closeShop()
     {
-        Debug.Log("MATI: ShopManager CloseShop");
         clearCart();
         this.gameObject.SetActive(false);
-        //OnShopOpenEvent?.Invoke(false);
 
+        UnregisterPurchaseHandler();
         UnityAction onShopClosed = _onShopCloseAction;
         _onShopCloseAction = null;
+        OnPurchaseCompleted = null;
         onShopClosed?.Invoke();
 
     }
@@ -235,6 +244,13 @@ public class ShopManager : MonoBehaviour
 
     public bool checkCanPlayerPurchaseConditions()
     {
+        if (_purchaseHandler == null ||
+            (_purchaseHandler is UnityEngine.Object owner && owner == null))
+            {
+            ShowPurchaseError("No purchase handler is configured.");
+            return false;
+            }
+
         if (_cartItemsSlots.Count == 0)
         {
             _canPlayerPurchase = false;
@@ -242,29 +258,17 @@ public class ShopManager : MonoBehaviour
             return false;
         }
 
-        bool enougMoney = true;
-        bool enoughInventorySlots = true;
-
-        if (OnCanPurchaseMoneyEvent != null)
-        {
-            foreach (CanPurchaseMoneyDelegate handler in OnCanPurchaseMoneyEvent.GetInvocationList())
-            {
-                enougMoney &= handler(_cartPrice); // all subscribers must agree
-            }
-        }
-
+        bool enougMoney =false;
+        bool enoughInventorySlots = false;
+        enougMoney = _purchaseHandler.CanPurchaseMoney(_cartPrice);
         inventorySlotData[] cartItems = new inventorySlotData[_cartItemsSlots.Count];
         for (int i = 0; i < cartItems.Length; i++)
         {
             cartItems[i] = new inventorySlotData(_cartItemsSlots[i].Item.IItemData, _cartItemsSlots[i].Item.Count);
         }
-        if (OnCanPurchaseInventorySlotsEvent != null)
-        {
-            foreach (CanPurchaseInventorySlotsDelegate handler in OnCanPurchaseInventorySlotsEvent.GetInvocationList())
-            {
-                enoughInventorySlots &= handler(cartItems); // all subscribers must agree
-            }
-        }
+        enoughInventorySlots = _purchaseHandler.CanPurchaseInventorySlots(cartItems);
+
+
         _canPlayerPurchase = (enoughInventorySlots && enougMoney);
 
         if (!_canPlayerPurchase)
@@ -302,12 +306,6 @@ public class ShopManager : MonoBehaviour
             if (!checkCanPlayerPurchaseConditions())
                 return;
 
-            if (_purchaseHandler == null ||
-                (_purchaseHandler is UnityEngine.Object owner && owner == null))
-            {
-                ShowPurchaseError("No purchase handler is configured.");
-                return;
-            }
 
             inventorySlotData[] cartItems = new inventorySlotData[_cartItemsSlots.Count];
             for (int i = 0; i < cartItems.Length; i++)
@@ -370,13 +368,11 @@ public class ShopItem
     public IItemData IItemData => _item;
     IItemTradeable _iTradeable;
     ITEM_TYPE _type;
-    //private ShopItemData _shopItem;
     private int _count;
     public int Count => _count;
     private int _price;
     public int PriceMultiple => _price;
     public int pricePerUnit => _iTradeable.Value;
-    //public ITEM_TYPE Type => _shopItem.Type;
     public ITEM_TYPE Type => _type;
 
     public ShopItem(IItemData item, IItemTradeable iTradeable, ITEM_TYPE type, int count = 1)

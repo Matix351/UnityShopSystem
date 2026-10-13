@@ -1,7 +1,8 @@
 using UnityEngine;
+using static UnityEditor.Progress;
 
 //public class PlayerDebug : MonoBehaviour, IcanPurchaseInventorySlots, ICanPurchaseMoney
-public class PlayerDebug : MonoBehaviour, IShopPurchaseHandler
+public class PlayerDebug : MonoBehaviour, IPurchaseHandler
 {
     [SerializeField] private ShopManager _shopManager;
     [SerializeField] private bool _hasEnoughInventorySpace;
@@ -14,36 +15,6 @@ public class PlayerDebug : MonoBehaviour, IShopPurchaseHandler
     //Main Logic
     //------------------------------------------------------------
 
-    private void Start()
-    {
-        if (_shopManager == null)
-        {
-            Debug.LogError("_shopManager is null", this);
-            return;
-        }
-
-        _shopManager.RegisterPurchaseHandler(this);
-        _shopManager.OnCanPurchaseMoneyEvent += CanPurchaseMoney;
-        _shopManager.OnCanPurchaseInventorySlotsEvent += CanPurchaseInventorySlots;
-        _shopManager.OnPurchaseCompleted += generatePurchaseLog;
-       
-        StateChanged += _shopManager.updatePlayerPurchaseConditions;
-    }
-
-
-    private void OnDisable()
-    {
-        if (_shopManager != null)
-        {
-            _shopManager.UnregisterPurchaseHandler(this);
-            _shopManager.OnCanPurchaseMoneyEvent -= CanPurchaseMoney;
-            _shopManager.OnCanPurchaseInventorySlotsEvent -= CanPurchaseInventorySlots;
-            _shopManager.OnPurchaseCompleted -= generatePurchaseLog;
-        }
-
-    }
-
-    
 
     public bool CanPurchaseMoney(int price)
     {
@@ -55,20 +26,19 @@ public class PlayerDebug : MonoBehaviour, IShopPurchaseHandler
         return _hasEnoughInventorySpace;
     }
 
-    private bool canPurchase()
-    {
-        return _hasEnoughInventorySpace && _hasEnougMoney;
-    }
 
     public bool TryPurchase(inventorySlotData[] cartItems, int price)
     {
-        return canPurchase();
-    }
-
-    //this is called when purchase is succesfull, You want to remove money here and add items to player inventory
-    public void onPurchase(inventorySlotData[] cartItems, int price)
-    {
-        generatePurchaseLog(cartItems, price);
+        if(_hasEnoughInventorySpace && _hasEnougMoney)
+        {
+            //You want to remove money here and add items to player inventory
+            generatePurchaseLog(cartItems, price);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 

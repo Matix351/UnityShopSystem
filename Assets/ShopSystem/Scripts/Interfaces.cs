@@ -10,12 +10,16 @@ public interface IItemType
 
 }
 
-public interface IShopPurchaseHandler
+
+public interface IPurchaseHandler
 {
-    // Validate current funds and capacity, then commit the whole purchase.
+    //invoke this everyTime state is changed
+    public event System.Action StateChanged;
+    public bool CanPurchaseMoney(int price);
+    public bool CanPurchaseInventorySlots(inventorySlotData[] cartItems);
+    // Validate current funds and capacity
     // Return false without changing money or inventory if the purchase cannot complete.
     bool TryPurchase(inventorySlotData[] items, int totalPrice);
-    void onPurchase(inventorySlotData[] cartItems, int price);
 
 
 }

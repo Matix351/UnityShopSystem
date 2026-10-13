@@ -478,6 +478,17 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!114 &1727892109 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5805030837702380335, guid: 846c2fb1216e2f44fa7ea22d4843b5f7, type: 3}
+  m_PrefabInstance: {fileID: 7251584435329442700}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea77cc8f5b6af2841b3b22a7d1876b63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &7251584435329442700
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -490,6 +501,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: CanvasDebug
       objectReference: {fileID: 0}
+    - target: {fileID: 5365443134220002720, guid: 846c2fb1216e2f44fa7ea22d4843b5f7, type: 3}
+      propertyPath: _player
+      value: 
+      objectReference: {fileID: 1727892109}
     - target: {fileID: 5365443134220002720, guid: 846c2fb1216e2f44fa7ea22d4843b5f7, type: 3}
       propertyPath: _shopManager
       value: 
