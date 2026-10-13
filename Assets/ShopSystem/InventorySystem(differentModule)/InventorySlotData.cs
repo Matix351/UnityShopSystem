@@ -3,11 +3,11 @@ using UnityEngine;
 public class inventorySlotData
 {
 
-    [SerializeField] private SOItemData _item;
+    [SerializeField] private IItemData _item;
     [SerializeField] private int _ammount;
-    public SOItemData item => _item;
+    public IItemData item => _item;
     public int ammount => _ammount;
-    public inventorySlotData(SOItemData item, int ammount)
+    public inventorySlotData(IItemData item, int ammount)
     {
         _item = item;
         _ammount = ammount;
@@ -94,7 +94,7 @@ public class inventorySlotData
         _ammount = 0;
     }
 
-    public void changeData(SOItemData newItem, int ammount)
+    public void changeData(IItemData newItem, int ammount)
     {
         _item = newItem;
         _ammount = ammount;

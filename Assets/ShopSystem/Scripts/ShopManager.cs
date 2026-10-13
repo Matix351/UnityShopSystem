@@ -63,14 +63,14 @@ public class ShopManager : MonoBehaviour
     private int _cartPrice;
 
 
-    public void openShop(SOItemData[] items, UnityAction onShopClosedAction = null)
+    public void openShop(IItemData[] items, UnityAction onShopClosedAction = null)
     {
         Debug.Log("MATI: ShopManager go");
         for(int i=0; i<items.Length; i++)
         {
             if (items[i] == null || !(items[i] is IItemTradeable tradeable) )
             {
-                Debug.LogError("Shop items must be non-null and tradeable", this);
+                Debug.LogError("Shop items must be non-null and implement  IItemTradeable", this);
                 return;
             }
 
@@ -182,7 +182,7 @@ public class ShopManager : MonoBehaviour
 
         foreach(ShopCartItemSlot slot in _cartItemsSlots)
         {
-            if(slot.Item.ItemSO == item.ItemSO)
+            if(slot.Item.IItemData == item.IItemData)
             {
                 int newQuantity = item.Count + slot.Item.Count;
                 if(newQuantity >  _maxQuantityPerItem)
@@ -256,7 +256,7 @@ public class ShopManager : MonoBehaviour
         inventorySlotData[] cartItems = new inventorySlotData[_cartItemsSlots.Count];
         for (int i = 0; i < cartItems.Length; i++)
         {
-            cartItems[i] = new inventorySlotData(_cartItemsSlots[i].Item.ItemSO, _cartItemsSlots[i].Item.Count);
+            cartItems[i] = new inventorySlotData(_cartItemsSlots[i].Item.IItemData, _cartItemsSlots[i].Item.Count);
         }
         if (OnCanPurchaseInventorySlotsEvent != null)
         {
@@ -311,7 +311,7 @@ public class ShopManager : MonoBehaviour
 
             inventorySlotData[] cartItems = new inventorySlotData[_cartItemsSlots.Count];
             for (int i = 0; i < cartItems.Length; i++)
-                cartItems[i] = new inventorySlotData(_cartItemsSlots[i].Item.ItemSO, _cartItemsSlots[i].Item.Count);
+                cartItems[i] = new inventorySlotData(_cartItemsSlots[i].Item.IItemData, _cartItemsSlots[i].Item.Count);
             int totalPrice = _cartPrice;
 
             if (!_purchaseHandler.TryPurchase(cartItems, totalPrice))
@@ -366,8 +366,8 @@ public class ShopManager : MonoBehaviour
 [System.Serializable]
 public class ShopItem
 {
-    private SOItemData _item;
-    public SOItemData ItemSO => _item;
+    private IItemData _item;
+    public IItemData IItemData => _item;
     IItemTradeable _iTradeable;
     ITEM_TYPE _type;
     //private ShopItemData _shopItem;
@@ -379,7 +379,7 @@ public class ShopItem
     //public ITEM_TYPE Type => _shopItem.Type;
     public ITEM_TYPE Type => _type;
 
-    public ShopItem(SOItemData item, IItemTradeable iTradeable, ITEM_TYPE type, int count = 1)
+    public ShopItem(IItemData item, IItemTradeable iTradeable, ITEM_TYPE type, int count = 1)
     {
         _item = item;
         _iTradeable = iTradeable;

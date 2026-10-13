@@ -1,19 +1,19 @@
 # Inventory System Module
 
-This folder contains the item and slot data classes used by the shop. They come from a separate inventory system; the full inventory implementation is not included in this repository.
+This folder contains the item-data interface and slot data helper used by the shop. They come from a separate inventory system; the full inventory implementation is not included in this repository.
 
 ## Included classes
 
 | Class | Purpose |
 | --- | --- |
-| `SOItemData` | Abstract `ScriptableObject` containing an item's name, icon, and maximum inventory stack size. |
+| `IItemData` | Interface exposing an item's `Name`, `image`, and `maxStackAmmount`. |
 | `inventorySlotData` | Holds an item reference and quantity. Provides methods for adding, removing, replacing, and clearing slot data. |
 
-`SOShopItemExample` extends `SOItemData` elsewhere in the shop module and adds a price and category through `IItemTradeable` and `IItemType`.
+`SOShopItemExample` extends `ScriptableObject` elsewhere in the shop module and implements `IItemData`, `IItemTradeable`, and `IItemType`. Custom items can implement these interfaces without inheriting from a shared item base class.
 
 ## How the shop uses these classes
 
-`ShopManager` accepts `SOItemData` assets and sends an `inventorySlotData[]` to its inventory-capacity and purchase callbacks. In these callbacks, each entry represents the total quantity of one item in the cart, not necessarily a single inventory stack.
+`ShopManager.openShop` accepts an `IItemData[]` whose entries also implement `IItemTradeable`, and sends an `inventorySlotData[]` to its inventory-capacity and purchase callbacks. Each slot exposes an `IItemData` reference through `item` and a quantity through `ammount`. In these callbacks, each entry represents the total quantity of one item in the cart, not necessarily a single inventory stack.
 
 The integrating inventory system is responsible for checking available space, distributing purchased quantities across stacks, and adding the items after a successful purchase. `PlayerDebug` only simulates purchase checks and logs the result; it does not implement an inventory or wallet.
 
@@ -21,12 +21,12 @@ Implement `IShopPurchaseHandler.TryPurchase(items, totalPrice)` and register it 
 
 The handler must recheck current funds and capacity and commit money and inventory changes together. Returning `false` must leave both unchanged. The shop keeps the cart on failure and clears it on success. With no handler, checkout is refused.
 
-Subscribe to `OnPurchaseCompleted` for UI, sound, quests, or logging. This notification runs after a successful transaction and cart reset; listeners do not approve or perform the purchase. The former `OnPurchaseEvent` API has been removed. `PlayerDebug` demonstrates registration and cleanup in `OnEnable` and `OnDisable`.
+Subscribe to `OnPurchaseCompleted` for UI, sound, quests, or logging. This notification runs after a successful transaction and cart reset; listeners do not approve or perform the purchase. `PlayerDebug` registers in `Start` and cleans up in `OnDisable`; use paired `OnEnable`/`OnDisable` registration in integrations that disable and re-enable the component.
 
 ## Stack sizes and cart quantities
 
-- `SOItemData.maxStackAmmount` limits how many items fit in one inventory stack. The sample assets use 64 for Other and Food, and 1 for Weapons and Tools.
-- `ShopManager.MaxQuantityPerItem` is a separate limit on the quantity of each item in the cart. Its serialized setting defaults to 999.
+- `IItemData.maxStackAmmount` limits how many items fit in one inventory stack. The sample assets use 64 for Other and Food, and 1 for Weapons and Tools.
+- `ShopManager.GetMaxQuantityPerItem` exposes the separate limit on the quantity of each item in the cart. Its serialized setting defaults to 999.
 
 For example, buying 70 apples with a stack size of 64 requires two stacks when no existing stack has available space. Buying three swords with a stack size of 1 requires three slots.
 

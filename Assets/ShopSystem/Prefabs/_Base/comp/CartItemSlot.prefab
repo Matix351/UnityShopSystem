@@ -1388,6 +1388,8 @@ MonoBehaviour:
   _countTV: {fileID: 7233520460620387537}
   _nameTV: {fileID: 5961239721955792817}
   _priceTV: {fileID: 1463344371744114105}
+  _iconImage: {fileID: 0}
+  _unitPriceTV: {fileID: 0}
 --- !u!222 &6602223289678061237
 CanvasRenderer:
   m_ObjectHideFlags: 0

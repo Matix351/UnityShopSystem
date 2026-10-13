@@ -1,8 +1,8 @@
 # Unity Shop System
 
-A Unity shop UI with a shopping cart, category filters, ScriptableObject items, and an interface for connecting your own inventory and currency systems.
+A Unity shop UI with a shopping cart, category filters, interface-based item data, and a purchase handler for connecting your own inventory and currency systems. The included sample items use ScriptableObjects.
 
-Includes a playable demo scene, UI prefabs, 20 sample items, and debug switches for testing purchase conditions. This repository is a Unity project, not a Unity Package Manager package.
+Includes two demo scenes, original and Illustrated Cream UI prefabs, 20 sample items, and debug switches for testing purchase conditions. This repository is a Unity project, not a Unity Package Manager package.
 
 ## Screenshots
 
@@ -40,11 +40,11 @@ Includes a playable demo scene, UI prefabs, 20 sample items, and debug switches 
 ## Features
 
 - Item icons, names, prices, and configurable quantities.
-- Category filters: Other, Weapon, Food, and Tool, You can easily Add more, and shop will work with them.
+- Category filters: Other, Weapon, Food, and Tool. Extend `ITEM_TYPE` in `Scripts/Enums.cs` to add categories; the shop creates tabs for categories present in its item list.
 - Shopping cart with quantity controls and a running total.
 - Money and inventory-capacity checks before checkout.
 - One purchase handler per shop, with separate success notifications.
-- ScriptableObject item definitions with per-item inventory stack sizes.
+- `IItemData` item definitions with per-item inventory stack sizes and sample ScriptableObject assets.
 - Separate player debug logic and toggle bindings.
 
 The demo simulates funds and inventory capacity. A complete wallet, inventory manager, persistence layer, and real transaction implementation are not included.
@@ -62,7 +62,7 @@ Open the full project to restore its package dependencies from [`Packages/manife
 1. Clone or download this repository.
 2. In Unity Hub, add the repository folder as an existing project.
 3. Open it with Unity 6000.3.11f1 and let the initial import finish.
-4. Open [`ShopSystemSampleScene.unity`](Assets/ShopSystem/Scenes/ShopSystemSampleScene.unity).
+4. Open [`ShopSystemSampleScene.unity`](Assets/ShopSystem/Scenes/ShopSystemSampleScene.unity) for the original UI or [`ShopSystemIllustratedCream.unity`](Assets/ShopSystem/Scenes/ShopSystemIllustratedCream.unity) for the illustrated UI.
 5. Enter Play Mode and click **OpenShop**.
 6. Use the player debug switches to simulate sufficient money and inventory space.
 7. Add items, change quantities, filter categories, and purchase the cart. Successful demo purchases are logged to the Console.
@@ -76,8 +76,6 @@ Open the full project to restore its package dependencies from [`Packages/manife
 | `Scenes/` | Original and Illustrated Cream demo scenes. |
 | `ScriptableObjects/` | `SOShopItemExample.cs` and sample item assets in `SO_ShopItemExample/`. |
 | `Sprites/` | Shared sample item icons. |
-| `InventorySystem(differentModule)/` | Shared item/slot data classes from a separate inventory module. |
-| `Tests/Editor/` | Shop regression tests, prefab checks, and scene/UI integration tests. |
 | `ShopDebug.cs` | Opens the demo shop with its assigned item list. |
 | `PlayerDebug.cs` | Simulates player purchase conditions and handles debug purchases. |
 
@@ -89,10 +87,11 @@ Open the full project to restore its package dependencies from [`Packages/manife
 
 `SOShopItemExample` extends `SOItemData` and implements:
 
+- `IItemData`: supplies `Name`, `image`, and `maxStackAmmount`.
 - `IItemTradeable`: supplies the integer price through `Value`.
 - `IItemType`: supplies the category through `Type`.
 
-Custom item classes must extend `SOItemData` and implement `IItemTradeable`. `IItemType` is optional; items without it appear under Other. Use non-negative prices.
+Custom item classes must implement [`IItemData`](Assets/ShopSystem/InventorySystem%28differentModule%29/IItemData.cs) and `IItemTradeable`; they do not need to inherit from a shared ScriptableObject base class. `IItemType` is optional; items without it appear under Other. Use non-negative prices and positive stack sizes. Pass a non-null array containing non-null, tradeable items to `openShop`.
 
 ## Open and close a shop
 
@@ -104,7 +103,7 @@ using UnityEngine;
 public class OpenShopExample : MonoBehaviour
 {
     [SerializeField] private ShopManager shop;
-    [SerializeField] private SOItemData[] items;
+    [SerializeField] private SOShopItemExample[] items;
 
     public void Open()
     {
@@ -118,7 +117,9 @@ public class OpenShopExample : MonoBehaviour
 }
 ```
 
-Opening a shop resets its cart. To clear the cart without closing the shop, call `clearCart()`.
+`openShop(IItemData[] items, UnityAction onShopClosedAction = null)` also accepts custom item implementations created at runtime. The example uses a concrete ScriptableObject array so sample assets can be assigned in the Inspector, just like `ShopDebug`.
+
+Opening or closing a shop clears its cart. Closing hides the shop and invokes the optional close callback. To clear the cart without closing the shop, call `clearCart()`.
 
 ## Connect your inventory and currency systems
 
@@ -139,7 +140,7 @@ private void OnEnable()
 {
     if (shop == null)
         return;
-        
+
     shop.RegisterPurchaseHandler(this);
     shop.OnCanPurchaseMoneyEvent += CanAfford;
     shop.OnCanPurchaseInventorySlotsEvent += CanStore;
@@ -173,9 +174,9 @@ The provided `PlayerDebug` is a simulation, not a real inventory adapter.
 
 **Max Quantity Per Item** on `ShopManager` limits the quantity of each item in the cart. The default serialized value is 999. Keep it positive.
 
-`SOItemData.maxStackAmmount` describes how many items fit in one inventory stack. The sample items use 64 for Other/Food and 1 for Weapons/Tools. A cart row may represent multiple inventory stacks: purchasing three swords requires three slots.
+`IItemData.maxStackAmmount` describes how many items fit in one inventory stack. The sample items use 64 for Other/Food and 1 for Weapons/Tools. A cart row may represent multiple inventory stacks: purchasing three swords requires three slots.
 
-Purchase callbacks receive one `inventorySlotData` entry per cart item, containing its total requested quantity. Your inventory implementation must distribute that quantity across stacks and check available capacity. See the [inventory module documentation](Assets/ShopSystem/InventorySystem%28differentModule%29/readMe.md) for the data helpers and their limitations.
+Purchase callbacks receive one `inventorySlotData` entry per cart item: `item` exposes its `IItemData` reference and `ammount` holds its total requested quantity. Your inventory implementation must distribute that quantity across stacks and check available capacity. See the [inventory module documentation](Assets/ShopSystem/InventorySystem%28differentModule%29/readMe.md) for the data helpers and their limitations.
 
 ## Use in an existing project
 
@@ -183,13 +184,6 @@ Start by running the included demo, then copy `Assets/ShopSystem` with its `.met
 
 Use the sample scene as a wiring reference: the shop needs its view prefabs, content transforms, and text fields assigned. Add the shop UI to a Canvas with a working EventSystem, register your purchase handler, and open it with your item list. If your project already defines equivalent inventory data types, adapt these references before combining the modules to avoid duplicate class names.
 
-## Tests and current limitations
-
-Open **Window → General → Test Runner**, select **EditMode**, and run `ShopManagerRegressionTests`. The tests enter Play Mode to exercise the actual prefabs.
-
-This is a development/debug project. The last full-suite run found quantity-related failures involving large typed quantities, cart-total integer overflow, and a zero configured quantity limit. The checkout and toggle-binding tests were subsequently verified separately. Review these edge cases before using the system with unrestricted quantities or large prices; the presence of tests does not mean the entire suite currently passes.
-
-The current sample player also registers in `Start` and unregisters in `OnDisable`. If your integration enables and disables the player component, use the paired `OnEnable`/`OnDisable` registration pattern above.
 
 ## License
 

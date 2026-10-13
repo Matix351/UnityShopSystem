@@ -15,7 +15,7 @@ public class ShopItemSlot : MonoBehaviour
 
     
 
-    public void init(SOItemData item, ShopManager manager)
+    public void init(IItemData item, ShopManager manager)
     {
 
         if (item is IItemTradeable iTradeable)
