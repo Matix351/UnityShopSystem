@@ -29,7 +29,7 @@ public class ShopItemSlot : MonoBehaviour
             _itemData = new ShopItem(item, iTradeable, itemType);
             _shopManager = manager;
 
-            _iconImage.sprite = item.image;
+            _iconImage.sprite = item.Image;
             _nameTV.text = item.Name;
             _priceTV.SetText(iTradeable.Value.ToString());
         }

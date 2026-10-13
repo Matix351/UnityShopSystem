@@ -10,7 +10,6 @@ public interface IItemType
 
 }
 
-
 public interface IPurchaseHandler
 {
     //invoke this everyTime state(money/slots) is changed

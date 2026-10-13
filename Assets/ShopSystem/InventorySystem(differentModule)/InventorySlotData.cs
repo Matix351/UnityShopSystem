@@ -38,14 +38,14 @@ public class inventorySlotData
         }
 
         int newAmmount = ammount + _ammount;
-        int remaining = newAmmount - _item.maxStackAmmount;
+        int remaining = newAmmount - _item.MaxStackAmmount;
 
         if (remaining <= 0)
         {
             _ammount = newAmmount;
             return 0;
         }
-        _ammount = _item.maxStackAmmount;
+        _ammount = _item.MaxStackAmmount;
         return remaining;
 
     }

@@ -14,9 +14,9 @@ public class SOShopItemExample : ScriptableObject, IItemData, IItemTradeable, II
 
     public string Name => _name;
 
-    public Sprite image => _image;
+    public Sprite Image => _image;
 
-    public int maxStackAmmount => _maxStackAmmount;
+    public int MaxStackAmmount => _maxStackAmmount;
 }
 
 

@@ -9,7 +9,6 @@ public class PlayerDebug : MonoBehaviour, IPurchaseHandler
     public event System.Action StateChanged;
 
     #region mainLogic
-    //Main Logic
 
 
     public bool CanPurchaseMoney(int price)

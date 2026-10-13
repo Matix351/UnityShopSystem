@@ -21,7 +21,7 @@ public class ShopCartItemSlot : MonoBehaviour
         _item = new ShopItem(item);
         _manager = manager;
         _nameTV.SetText(item.IItemData.Name);
-        if (_iconImage != null) _iconImage.sprite = item.IItemData.image;
+        if (_iconImage != null) _iconImage.sprite = item.IItemData.Image;
         if (_unitPriceTV != null) _unitPriceTV.SetText(_item.pricePerUnit.ToString());
         updateCountTVs();
         _manager.OnCartItemDataChange(this);
