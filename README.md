@@ -25,11 +25,6 @@ Includes two demo scenes, original and Illustrated Cream UI prefabs, 20 sample i
   <em>Weapon category filter</em>
 </p>
 
-<p align="center">
-  <img src="docs/screenshots/purchase-handler-registration.png" alt="Demo Start method registering the purchase handler and subscribing to purchase events" width="960" />
-  <br />
-  <em>Earlier registration example; see the current openShop setup below</em>
-</p>
 
 <p align="center">
   <img src="docs/screenshots/purchase-success.png" alt="Console purchase result: 12 apples, 33 maces, and 1 hammer, totaling 6580, with purchase successful set to true" width="960" />
