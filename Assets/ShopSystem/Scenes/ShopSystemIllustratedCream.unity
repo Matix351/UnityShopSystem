@@ -775,6 +775,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3876736498700393216, guid: c4e0174191ba1d346bb2ffb9d11a8ae9, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4615479998396373692, guid: c4e0174191ba1d346bb2ffb9d11a8ae9, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4905427958004561566, guid: c4e0174191ba1d346bb2ffb9d11a8ae9, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1
