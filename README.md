@@ -171,4 +171,11 @@ Use the sample scene as a wiring reference: the shop needs its view prefabs, con
 
 ## License
 
-No `LICENSE` file is currently included in this repository.
+This project uses the custom [Unity Shop System Source-Available License](LICENSE).
+
+- You may use and modify the system in free or commercial games and applications, including closed-source products.
+- You must include the following user-visible credit in your product's credits, About screen, or accompanying user documentation: **Uses Unity Shop System by Mateusz Ciszek.**
+- You may not sell or repackage the system, modified versions, or substantial portions as a reusable asset, plugin, template, library, or toolkit, including in paid bundles.
+- Free source sharing is permitted under the same license. Preserve the copyright and license notices when redistributing the system.
+
+The [LICENSE](LICENSE) contains the full terms. This is source-available software, not OSI-approved open-source software. Third-party materials, including Unity/TextMesh Pro content, fonts, and other third-party assets, retain their own licenses and are not relicensed by this project's license. Preserve their applicable license and attribution notices.

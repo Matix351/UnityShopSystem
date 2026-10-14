@@ -1,0 +1,86 @@
+Unity Shop System Source-Available License
+Version 1.0
+
+Copyright (c) 2026 Mateusz Ciszek
+
+1. Scope
+
+This license applies to the original code, documentation, and other materials
+in this repository to the extent that Mateusz Ciszek holds the rights to license
+them (the "Software"). Third-party materials are excluded and remain subject to
+their respective licenses. This license grants no rights in Unity or other
+third-party software, fonts, images, or assets.
+
+2. Permission
+
+Subject to the conditions below, you may use, copy, study, and modify the
+Software, and incorporate it into games and applications. You may distribute,
+sell, and otherwise monetize those games and applications, including through
+subscriptions, advertising, and in-app purchases, without paying royalties
+under this license. You are not required to disclose your product's source code.
+
+You may share the Software and modified versions free of charge, including in
+public source repositories, provided that this license and the copyright notice
+are preserved and the covered Software remains subject to these terms.
+
+3. Required product credit
+
+Every game or application distributed or made available to end users that
+includes the Software or a modified version must display the following credit:
+
+    Uses Unity Shop System by Mateusz Ciszek.
+
+Place this credit in a reasonably accessible credits or About screen, or in
+user-facing documentation distributed with the product. The credit must be
+legible and accessible to end users; a source-code comment alone is insufficient.
+This requirement applies to both free and commercial products. Private use
+without distribution or availability to end users does not require product credit.
+
+4. No sale as a reusable development product
+
+You may not sell, license for a fee, or otherwise provide for payment access to
+the Software, modified versions, or substantial portions of it as a standalone
+or reusable development product. This includes asset packs, plugins, libraries,
+templates, toolkits, and paid source-code packages, whether offered alone or
+bundled with other development materials. Renaming, modifying, or repackaging
+the Software does not remove this restriction.
+
+This restriction does not prohibit selling or monetizing games or applications
+that incorporate the Software for their end-user functionality, as permitted
+in section 2. It also does not prohibit paid work integrating or customizing
+the Software for such a game or application. A product marketed or supplied as
+a means to obtain the Software for reuse in other projects remains subject to
+the restriction, even if described as a game or application.
+
+5. Notices and ownership
+
+Keep this license and the copyright notice with all redistributed copies or
+substantial portions of the Software, including copies incorporated into a
+product; an accompanying third-party notices or licenses file is sufficient
+for compiled distributions. Identify your changes when redistributing modified
+source code. Do not claim authorship of the original Software or imply that
+Mateusz Ciszek endorses your product.
+
+You may choose separate terms for your own product and original contributions,
+but may not grant rights to the covered Software that conflict with this
+license. All rights not expressly granted are reserved. Separate written
+permission from the copyright holder is required for uses outside this license.
+
+6. Termination
+
+Permission under this license terminates if you violate its conditions. If you
+cure the violation within 30 days after becoming aware of it, your permission
+is reinstated. Termination of your permission does not terminate the permissions
+of recipients who remain in compliance with this license.
+
+7. Disclaimer
+
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE SOFTWARE IS PROVIDED
+"AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT
+LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+AND NONINFRINGEMENT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+OR OTHER DEALINGS IN THE SOFTWARE.
+
+This is a custom source-available license, not an OSI-approved open-source license.
