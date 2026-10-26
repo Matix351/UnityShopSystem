@@ -91,9 +91,9 @@ Open the full project to restore its package dependencies from [`Packages/manife
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/shop-items-inspector.png" alt="ShopDebug Inspector with the shop manager and 20 sample item assets assigned to the Shop Items list" width="518" />
+  <img src="docs/screenshots/shop-items-inspector.png" alt="Shop Example Inspector with the shop manager and 20 sample item assets assigned to the Shop Items list" width="631" />
   <br />
-  <em>Assign item assets to the ShopDebug Shop Items list</em>
+  <em>Assign item assets to the Shop Example Shop Items list</em>
 </p>
 
 [`SOShopItemExample`](Assets/ShopSystem/ScriptableObjects/SOShopItemExample.cs) extends `ScriptableObject` and implements:
