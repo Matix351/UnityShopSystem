@@ -84,6 +84,18 @@ Open the full project to restore its package dependencies from [`Packages/manife
 2. Set its name, sprite, price (`Value`), category (`Type`), and maximum stack amount.
 3. Add the asset to the `ShopDebug` item list or pass it to `ShopManager.openShop` from your own code.
 
+<p align="center">
+  <img src="docs/screenshots/item-asset-inspector.png" alt="Apple ScriptableObject in the Unity Inspector with its name, icon, maximum stack amount, value, and Food category" width="634" />
+  <br />
+  <em>Configure a sample item asset in the Inspector</em>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/shop-items-inspector.png" alt="ShopDebug Inspector with the shop manager and 20 sample item assets assigned to the Shop Items list" width="518" />
+  <br />
+  <em>Assign item assets to the ShopDebug Shop Items list</em>
+</p>
+
 [`SOShopItemExample`](Assets/ShopSystem/ScriptableObjects/SOShopItemExample.cs) extends `ScriptableObject` and implements:
 
 - `IItemData`: supplies `Name`, `image`, and `maxStackAmmount`.

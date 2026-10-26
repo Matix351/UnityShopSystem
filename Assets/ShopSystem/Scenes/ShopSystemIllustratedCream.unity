@@ -563,15 +563,7 @@ PrefabInstance:
       propertyPath: m_Name
       value: CanvasDebug
       objectReference: {fileID: 0}
-    - target: {fileID: 4314548352013718128, guid: 846c2fb1216e2f44fa7ea22d4843b5f7, type: 3}
-      propertyPath: m_SortingOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5365443134220002720, guid: 846c2fb1216e2f44fa7ea22d4843b5f7, type: 3}
-      propertyPath: _player
-      value: 
-      objectReference: {fileID: 2038221021}
-    - target: {fileID: 5365443134220002720, guid: 846c2fb1216e2f44fa7ea22d4843b5f7, type: 3}
+    - target: {fileID: 3867756707995582199, guid: 846c2fb1216e2f44fa7ea22d4843b5f7, type: 3}
       propertyPath: _shopManager
       value: 
       objectReference: {fileID: 2243033517600515773}
@@ -579,10 +571,6 @@ PrefabInstance:
       propertyPath: _shopManager
       value: 
       objectReference: {fileID: 2243033517600515773}
-    - target: {fileID: 6676587393481845330, guid: 846c2fb1216e2f44fa7ea22d4843b5f7, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 300
-      objectReference: {fileID: 0}
     - target: {fileID: 8707358056994640081, guid: 846c2fb1216e2f44fa7ea22d4843b5f7, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -668,17 +656,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 846c2fb1216e2f44fa7ea22d4843b5f7, type: 3}
---- !u!114 &2038221021 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5805030837702380335, guid: 846c2fb1216e2f44fa7ea22d4843b5f7, type: 3}
-  m_PrefabInstance: {fileID: 2038221020}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea77cc8f5b6af2841b3b22a7d1876b63, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &2243033517600515772
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -687,6 +664,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1418460508226488028, guid: c4e0174191ba1d346bb2ffb9d11a8ae9, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1945209949472037060, guid: c4e0174191ba1d346bb2ffb9d11a8ae9, type: 3}
       propertyPath: m_Pivot.x
       value: 0
