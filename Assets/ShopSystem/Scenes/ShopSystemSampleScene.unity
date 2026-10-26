@@ -505,6 +505,10 @@ PrefabInstance:
       propertyPath: _shopManager
       value: 
       objectReference: {fileID: 647870396}
+    - target: {fileID: 4314548352013718128, guid: 846c2fb1216e2f44fa7ea22d4843b5f7, type: 3}
+      propertyPath: m_SortingOrder
+      value: 49
+      objectReference: {fileID: 0}
     - target: {fileID: 5365443134220002720, guid: 846c2fb1216e2f44fa7ea22d4843b5f7, type: 3}
       propertyPath: _player
       value: 
