@@ -15,7 +15,7 @@ public class ShopItemSlot : MonoBehaviour
 
     
 
-    public void init(IItemData item, ShopManager manager)
+    public void Init(IItemData item, ShopManager manager)
     {
 
         if (item is IItemTradeable iTradeable)
@@ -35,7 +35,7 @@ public class ShopItemSlot : MonoBehaviour
         }
         else
         {
-            Debug.LogError(" ShopItemSlot init " + item.Name + " lacks interface (IItemTradeable or IItemType", this);
+            Debug.LogError(" ShopItemSlot Init " + item.Name + " lacks interface (IItemTradeable or IItemType", this);
             return;
         }
 
@@ -58,10 +58,10 @@ public class ShopItemSlot : MonoBehaviour
         _inputAmmountTV.text = "1";
     }
 
-    public void IncreaseSelectedQuantity() => ChangeSelectedQuantity(1);
-    public void DecreaseSelectedQuantity() => ChangeSelectedQuantity(-1);
+    public void IncreaseSelectedQuantity() => changeSelectedQuantity(1);
+    public void DecreaseSelectedQuantity() => changeSelectedQuantity(-1);
 
-    private void ChangeSelectedQuantity(int delta)
+    private void changeSelectedQuantity(int delta)
     {
         int.TryParse(_inputAmmountTV.text, out int count);
         int maximum = _shopManager != null ? _shopManager.GetMaxQuantityPerItem : 999;
@@ -85,7 +85,7 @@ public class ShopItemSlot : MonoBehaviour
         }
         else if(count > 0)
         {
-            _itemData.changeCount(count);
+            _itemData.ChangeCount(count);
             return true;
 
         }
@@ -96,7 +96,7 @@ public class ShopItemSlot : MonoBehaviour
 
     private void resetItemCount()
     {
-        _itemData.changeCount(1);
+        _itemData.ChangeCount(1);
     }
     private void addItemToCart()
     {
@@ -105,7 +105,7 @@ public class ShopItemSlot : MonoBehaviour
             return;
         }
         Debug.Log("Adding " + _itemData.Count + " items to Cart");
-        _shopManager.addToCart(_itemData);
+        _shopManager.AddToCart(_itemData);
         resetItemCount();
     }
 }

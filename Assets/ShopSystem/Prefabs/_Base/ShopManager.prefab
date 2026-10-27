@@ -278,7 +278,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1607480172135593478}
         m_TargetAssemblyTypeName: ShopManager, Assembly-CSharp
-        m_MethodName: onPurchaseButtonClick
+        m_MethodName: OnPurchaseButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2672,7 +2672,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1607480172135593478}
         m_TargetAssemblyTypeName: ShopManager, Assembly-CSharp
-        m_MethodName: closeShop
+        m_MethodName: CloseShop
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

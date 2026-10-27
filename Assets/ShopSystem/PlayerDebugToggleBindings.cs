@@ -9,10 +9,10 @@ public class PlayerDebugToggleBindings : MonoBehaviour
 
     private void OnEnable()
     {
-        _hasEnoughMoneyToggle.onValueChanged.AddListener(_playerDebug.setEnoughMoney);
-        _hasEnoughInventorySpaceToggle.onValueChanged.AddListener(_playerDebug.setEnougInventorySlots);
-        _playerDebug.StateChanged += RefreshToggles;
-        RefreshToggles();
+        _hasEnoughMoneyToggle.onValueChanged.AddListener(_playerDebug.SetEnoughMoney);
+        _hasEnoughInventorySpaceToggle.onValueChanged.AddListener(_playerDebug.SetEnougInventorySlots);
+        _playerDebug.StateChanged += refreshToggles;
+        refreshToggles();
     }
 
     private void OnDisable()
@@ -21,13 +21,13 @@ public class PlayerDebugToggleBindings : MonoBehaviour
             return;
 
         if (_hasEnoughMoneyToggle != null)
-            _hasEnoughMoneyToggle.onValueChanged.RemoveListener(_playerDebug.setEnoughMoney);
+            _hasEnoughMoneyToggle.onValueChanged.RemoveListener(_playerDebug.SetEnoughMoney);
         if (_hasEnoughInventorySpaceToggle != null)
-            _hasEnoughInventorySpaceToggle.onValueChanged.RemoveListener(_playerDebug.setEnougInventorySlots);
-        _playerDebug.StateChanged -= RefreshToggles;
+            _hasEnoughInventorySpaceToggle.onValueChanged.RemoveListener(_playerDebug.SetEnougInventorySlots);
+        _playerDebug.StateChanged -= refreshToggles;
     }
 
-    private void RefreshToggles()
+    private void refreshToggles()
     {
         _hasEnoughMoneyToggle.SetIsOnWithoutNotify(_playerDebug.HasEnoughMoney);
         _hasEnoughInventorySpaceToggle.SetIsOnWithoutNotify(_playerDebug.HasEnoughInventorySpace);

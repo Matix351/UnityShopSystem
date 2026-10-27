@@ -82,7 +82,7 @@ Open the full project to restore its package dependencies from [`Packages/manife
 
 1. In the Project window, choose **Create → Scriptable Objects → Inventory → ShopItem**.
 2. Set its name, sprite, price (`Value`), category (`Type`), and maximum stack amount.
-3. Add the asset to the `ShopDebug` item list or pass it to `ShopManager.openShop` from your own code.
+3. Add the asset to the `ShopDebug` item list or pass it to `ShopManager.OpenShop` from your own code.
 
 <p align="center">
   <img src="docs/screenshots/item-asset-inspector.png" alt="Apple ScriptableObject in the Unity Inspector with its name, icon, maximum stack amount, value, and Food category" width="634" />
@@ -102,7 +102,7 @@ Open the full project to restore its package dependencies from [`Packages/manife
 - `IItemTradeable`: supplies the integer price through `Value`.
 - `IItemType`: supplies the category through `Type`.
 
-Custom item classes must implement [`IItemData`](Assets/ShopSystem/InventorySystem%28differentModule%29/IItemData.cs) and `IItemTradeable`; they do not need to inherit from a shared ScriptableObject base class. `IItemType` is optional; items without it appear under Other. Use non-negative prices and positive stack sizes. Pass a non-null array containing non-null, tradeable items to `openShop`.
+Custom item classes must implement [`IItemData`](Assets/ShopSystem/InventorySystem%28differentModule%29/IItemData.cs) and `IItemTradeable`; they do not need to inherit from a shared ScriptableObject base class. `IItemType` is optional; items without it appear under Other. Use non-negative prices and positive stack sizes. Pass a non-null array containing non-null, tradeable items to `OpenShop`.
 
 ## Open and close a shop
 
@@ -119,27 +119,27 @@ public class OpenShopExample : MonoBehaviour
 
     public void Open()
     {
-        shop.openShop(items, player, () => Debug.Log("Shop closed"));
-        shop.OnPurchaseCompleted += HandlePurchaseCompleted;
+        shop.OpenShop(items, player, () => Debug.Log("Shop closed"));
+        shop.OnPurchaseCompleted += handlePurchaseCompleted;
     }
 
     public void Close()
     {
-        shop.closeShop();
+        shop.CloseShop();
     }
 
-    private void HandlePurchaseCompleted(inventorySlotData[] purchasedItems, int totalPrice)
+    private void handlePurchaseCompleted(inventorySlotData[] purchasedItems, int totalPrice)
     {
         Debug.Log($"Purchased {purchasedItems.Length} item types for {totalPrice}.");
     }
 }
 ```
 
-The signature is `openShop(IItemData[] items, IPurchaseHandler purchaseHandler, UnityAction onShopClosedAction = null)`. It accepts custom item implementations created at runtime; the concrete ScriptableObject array in this example allows sample assets to be assigned in the Inspector. Replace `PlayerDebug` with your own component implementing `IPurchaseHandler` for a real integration.
+The signature is `OpenShop(IItemData[] items, IPurchaseHandler purchaseHandler, UnityAction onShopClosedAction = null)`. It accepts custom item implementations created at runtime; the concrete ScriptableObject array in this example allows sample assets to be assigned in the Inspector. Replace `PlayerDebug` with your own component implementing `IPurchaseHandler` for a real integration.
 
-Opening clears the cart and connects the handler's `StateChanged` event. Closing clears the cart, hides the shop, disconnects the handler, clears all `OnPurchaseCompleted` listeners, and invokes the close callback. Subscribe to completion notifications each time you open, as shown above. To clear the cart while keeping the shop open and the handler connected, call `clearCart()`.
+Opening clears the cart and connects the handler's `StateChanged` event. Closing clears the cart, hides the shop, disconnects the handler, clears all `OnPurchaseCompleted` listeners, and invokes the close callback. Subscribe to completion notifications each time you open, as shown above. To clear the cart while keeping the shop open and the handler connected, call `ClearCart()`.
 
-Pair each successful `openShop` call with one `closeShop` call. Close an existing session before opening another; repeated opens with the same handler currently add duplicate state-change subscriptions, and closing without a registered handler is not supported.
+Pair each successful `OpenShop` call with one `CloseShop` call. Close an existing session before opening another; repeated opens with the same handler currently add duplicate state-change subscriptions, and closing without a registered handler is not supported.
 
 ## Connect your inventory and currency systems
 
@@ -161,7 +161,7 @@ The signatures above describe the contract; provide method bodies in your implem
 
 Both condition checks must pass. They run when cart data or handler state changes and again when the purchase button is clicked. Keep the condition checks free of transaction side effects; commit changes only in `TryPurchase`.
 
-Handler registration and removal are private implementation details of `ShopManager`. Pass the handler to `openShop` and let `closeShop` disconnect it.
+Handler registration and removal are private implementation details of `ShopManager`. Pass the handler to `OpenShop` and let `CloseShop` disconnect it.
 Empty carts and checkout without a valid handler are rejected. A failed purchase retains the cart; a successful purchase clears it and raises `OnPurchaseCompleted(inventorySlotData[] items, int totalPrice)`. This optional event is for UI, quests, or logging after the transaction, not for deducting money or granting items again.
 
 The provided `PlayerDebug` simulates the two conditions, raises `StateChanged` from its debug setters, and logs successful purchases inside `TryPurchase`. It does not implement an inventory or wallet, and `ShopDebug` passes it to the manager when opening the shop.

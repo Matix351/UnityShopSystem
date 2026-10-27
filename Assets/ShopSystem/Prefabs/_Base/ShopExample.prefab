@@ -125,7 +125,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 5590413640114273663}
         m_TargetAssemblyTypeName: OpenShopButtonDebug, Assembly-CSharp
-        m_MethodName: openShopDebug
+        m_MethodName: OpenShopDebug
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

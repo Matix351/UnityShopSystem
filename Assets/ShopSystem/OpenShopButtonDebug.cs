@@ -9,9 +9,9 @@ public class OpenShopButtonDebug : MonoBehaviour
 
     //communication should go from the player to the shop NPC, f.e. through an interaction system.
     //for demonstration purposes, this class handles it and serves as man in the middle.
-    public void openShopDebug()
+    public void OpenShopDebug()
     {
         IPurchaseHandler ph = _player;
-        _shopExample.openShop(ph);
+        _shopExample.OpenShop(ph);
     }
 }

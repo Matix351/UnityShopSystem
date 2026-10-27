@@ -6,9 +6,9 @@ public class ShopDebug : MonoBehaviour
     [SerializeField] private SOShopItemExample[] _shopItems;
     [SerializeField] private PlayerDebug _player;
 
-    public void openShop()
+    public void OpenShop()
     {
         IPurchaseHandler ph = _player;
-        _shopManager.openShop(_shopItems,ph);
+        _shopManager.OpenShop(_shopItems,ph);
     }
 }

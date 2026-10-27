@@ -67,13 +67,13 @@ public class PlayerDebug : MonoBehaviour, IPurchaseHandler
         StateChanged?.Invoke();
     }
 
-    public void setEnoughMoney(bool money)
+    public void SetEnoughMoney(bool money)
     {
         _hasEnougMoney = money;
         StateChanged?.Invoke();
     }
 
-    public void setEnougInventorySlots(bool inventorySlots)
+    public void SetEnougInventorySlots(bool inventorySlots)
     {
         _hasEnoughInventorySpace = inventorySlots;
         StateChanged?.Invoke();

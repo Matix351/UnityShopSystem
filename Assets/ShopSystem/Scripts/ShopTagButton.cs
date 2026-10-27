@@ -17,36 +17,36 @@ public class ShopTagButton : MonoBehaviour
      private bool _allItemTyoes = false;
     private ShopManager _shopManager;
 
-    public void init(ITEM_TYPE name, ShopManager manager)
+    public void Init(ITEM_TYPE name, ShopManager manager)
     {
         _itemType = name;
         _nametTV.SetText(name.ToString());
         _shopManager = manager;
-        SetSelected(false);
+        setSelected(false);
     }
 
-    public void initAllTypesTag(ShopManager manager)
+    public void InitAllTypesTag(ShopManager manager)
     {
         _allItemTyoes = true;
         _itemType = (ITEM_TYPE)0;
         _shopManager = manager;
         _nametTV.SetText("All");
-        SetSelected(true);
+        setSelected(true);
 
 
     }
 
-    public void onClick()
+    public void OnClick()
     {
         _shopManager.OnTagClick(_itemType, _allItemTyoes);
     }
 
     public void UpdateSelection(ITEM_TYPE type, bool all)
     {
-        SetSelected(all ? _allItemTyoes : !_allItemTyoes && _itemType == type);
+        setSelected(all ? _allItemTyoes : !_allItemTyoes && _itemType == type);
     }
 
-    private void SetSelected(bool selected)
+    private void setSelected(bool selected)
     {
         if (_background == null) return;
         _background.color = selected ? _selectedBackgroundColor : _unselectedBackgroundColor;

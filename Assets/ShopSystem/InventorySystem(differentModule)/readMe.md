@@ -13,17 +13,17 @@ This folder contains the item-data interface and slot data helper used by the sh
 
 ## How the shop uses these classes
 
-`ShopManager.openShop` accepts an `IItemData[]` whose entries also implement `IItemTradeable`, and sends an `inventorySlotData[]` to its inventory-capacity and purchase callbacks. Each slot exposes an `IItemData` reference through `item` and a quantity through `ammount`. In these callbacks, each entry represents the total quantity of one item in the cart, not necessarily a single inventory stack.
+`ShopManager.OpenShop` accepts an `IItemData[]` whose entries also implement `IItemTradeable`, and sends an `inventorySlotData[]` to its inventory-capacity and purchase callbacks. Each slot exposes an `IItemData` reference through `item` and a quantity through `ammount`. In these callbacks, each entry represents the total quantity of one item in the cart, not necessarily a single inventory stack.
 
 The integrating inventory system is responsible for checking available space, distributing purchased quantities across stacks, and adding the items after a successful purchase. `PlayerDebug` only simulates purchase checks and logs the result; it does not implement an inventory or wallet.
 
-Implement `IPurchaseHandler` with `CanPurchaseMoney(int price)`, `CanPurchaseInventorySlots(inventorySlotData[] cartItems)`, `TryPurchase(inventorySlotData[] items, int totalPrice)`, and an `Action StateChanged` event. Pass it to `ShopManager.openShop(items, handler, optionalCloseCallback)`. Registration is private to the manager; `closeShop()` disconnects the handler. Close the current shop session before opening another.
+Implement `IPurchaseHandler` with `CanPurchaseMoney(int price)`, `CanPurchaseInventorySlots(inventorySlotData[] cartItems)`, `TryPurchase(inventorySlotData[] items, int totalPrice)`, and an `Action StateChanged` event. Pass it to `ShopManager.OpenShop(items, handler, optionalCloseCallback)`. Registration is private to the manager; `CloseShop()` disconnects the handler. Close the current shop session before opening another.
 
 Raise `StateChanged` when funds or inventory capacity change. The manager subscribes while the shop is open and calls both condition checks to refresh its purchase messages. Checkout also calls both checks before attempting the transaction.
 
 The handler must recheck current funds and capacity and commit money and inventory changes together. Returning `false` must leave both unchanged. The shop keeps the cart on failure and clears it on success. With no handler, checkout is refused.
 
-Subscribe to `OnPurchaseCompleted` for UI, sound, quests, or logging. This notification runs after a successful transaction and cart reset; listeners do not approve or perform the purchase. Closing the shop clears these listeners, so subscribe again for each new session. `ShopDebug` passes its assigned `PlayerDebug` to `openShop`; the demo handler logs a successful purchase inside `TryPurchase`.
+Subscribe to `OnPurchaseCompleted` for UI, sound, quests, or logging. This notification runs after a successful transaction and cart reset; listeners do not approve or perform the purchase. Closing the shop clears these listeners, so subscribe again for each new session. `ShopDebug` passes its assigned `PlayerDebug` to `OpenShop`; the demo handler logs a successful purchase inside `TryPurchase`.
 
 ## Stack sizes and cart quantities
 
@@ -34,10 +34,10 @@ For example, buying 70 apples with a stack size of 64 requires two stacks when n
 
 ## Slot method behavior
 
-- `addItems(amount)` fills an initialized slot up to its stack limit and returns the quantity that did not fit. Assign an item before calling it with a positive amount.
-- `removeItems(amount)` returns the quantity removed and clears the item reference when the slot becomes empty.
-- `clearData()` clears both the item reference and quantity.
-- Constructors, `changeData(...)`, and `changeAmmount(...)` assign quantities without enforcing stack limits. Callers must validate their input; `changeAmmount(0)` also clears the item reference.
+- `AddItems(amount)` fills an initialized slot up to its stack limit and returns the quantity that did not fit. Assign an item before calling it with a positive amount.
+- `RemoveItems(amount)` returns the quantity removed and clears the item reference when the slot becomes empty.
+- `ClearData()` clears both the item reference and quantity.
+- Constructors, `ChangeData(...)`, and `ChangeAmmount(...)` assign quantities without enforcing stack limits. Callers must validate their input; `ChangeAmmount(0)` also clears the item reference.
 
 These classes are data helpers, not a complete inventory manager. Existing API spellings such as `ammount` and `maxStackAmmount` are preserved here to match the code.
 

@@ -684,7 +684,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6648513713080117155}
         m_TargetAssemblyTypeName: ShopCartItemSlot, Assembly-CSharp
-        m_MethodName: increaseCountButton
+        m_MethodName: IncreaseCountButton
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -954,7 +954,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6648513713080117155}
         m_TargetAssemblyTypeName: ShopCartItemSlot, Assembly-CSharp
-        m_MethodName: updateData
+        m_MethodName: UpdateData
         m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1299,7 +1299,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 6648513713080117155}
         m_TargetAssemblyTypeName: ShopCartItemSlot, Assembly-CSharp
-        m_MethodName: decreaseCountButton
+        m_MethodName: DecreaseCountButton
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -30,7 +30,7 @@ public class inventorySlotData
     /// </summary>
     /// <param name="ammount"></param>
     /// <returns></returns>
-    public int addItems(int ammount)
+    public int AddItems(int ammount)
     {
         if (ammount <= 0)
         {
@@ -54,7 +54,7 @@ public class inventorySlotData
     /// </summary>
     /// <param name="ammount"></param>
     /// <returns></returns>
-    public int removeItems(int ammount)
+    public int RemoveItems(int ammount)
     {
         if (ammount <= 0)
             return 0;
@@ -78,7 +78,7 @@ public class inventorySlotData
         return removedAmount;
     }
 
-    public void changeAmmount(int newAmmount)
+    public void ChangeAmmount(int newAmmount)
     {
         _ammount = newAmmount;
         if (newAmmount == 0)
@@ -88,19 +88,19 @@ public class inventorySlotData
         }
     }
 
-    public void clearData()
+    public void ClearData()
     {
         _item = null;
         _ammount = 0;
     }
 
-    public void changeData(IItemData newItem, int ammount)
+    public void ChangeData(IItemData newItem, int ammount)
     {
         _item = newItem;
         _ammount = ammount;
     }
 
-    public void changeData(inventorySlotData data)
+    public void ChangeData(inventorySlotData data)
     {
         _item = data.item;
         _ammount = data.ammount;

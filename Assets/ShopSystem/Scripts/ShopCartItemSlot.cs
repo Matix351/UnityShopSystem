@@ -16,7 +16,7 @@ public class ShopCartItemSlot : MonoBehaviour
     private ShopManager _manager;
 
 
-    public void init(ShopItem item, ShopManager manager)
+    public void Init(ShopItem item, ShopManager manager)
     {
         _item = new ShopItem(item);
         _manager = manager;
@@ -27,12 +27,12 @@ public class ShopCartItemSlot : MonoBehaviour
         _manager.OnCartItemDataChange(this);
     }
 
-    public void updateData(int count)
+    public void UpdateData(int count)
     {
         if(count > _manager.GetMaxQuantityPerItem)
-            _item.changeCount(_manager.GetMaxQuantityPerItem);
+            _item.ChangeCount(_manager.GetMaxQuantityPerItem);
         else
-        _item.changeCount(count);
+        _item.ChangeCount(count);
         
         updateCountTVs();
         _manager.OnCartItemDataChange(this);
@@ -44,14 +44,14 @@ public class ShopCartItemSlot : MonoBehaviour
         _priceTV.SetText(_item.PriceMultiple.ToString());
     }
 
-    public void increaseCountButton()
+    public void IncreaseCountButton()
     {
-        updateData(_item.Count + 1);
+        UpdateData(_item.Count + 1);
     }
 
-    public void decreaseCountButton()
+    public void DecreaseCountButton()
     {
-        updateData(_item.Count - 1);
+        UpdateData(_item.Count - 1);
 
     }
 }

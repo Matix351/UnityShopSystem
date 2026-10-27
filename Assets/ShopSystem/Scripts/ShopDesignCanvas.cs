@@ -4,11 +4,11 @@ using UnityEngine;
 [ExecuteAlways, RequireComponent(typeof(RectTransform))]
 public sealed class ShopDesignCanvas : MonoBehaviour
 {
-    private void OnEnable() => Fit();
-    private void OnRectTransformDimensionsChange() => Fit();
-    private void LateUpdate() => Fit();
+    private void OnEnable() => fit();
+    private void OnRectTransformDimensionsChange() => fit();
+    private void LateUpdate() => fit();
 
-    private void Fit()
+    private void fit()
     {
         var rect = (RectTransform)transform;
         if (!(rect.parent is RectTransform parent)) return;

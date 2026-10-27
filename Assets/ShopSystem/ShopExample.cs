@@ -6,9 +6,9 @@ public class ShopExample : MonoBehaviour
     [SerializeField] private SOShopItemExample[] _shopItems;
 
 
-    public void openShop(IPurchaseHandler purchaseHandler)
+    public void OpenShop(IPurchaseHandler purchaseHandler)
     {
-        _shopManager.openShop(_shopItems, purchaseHandler);
+        _shopManager.OpenShop(_shopItems, purchaseHandler);
     }
 
 }
