@@ -139,7 +139,9 @@ The signature is `OpenShop(IItemData[] items, IPurchaseHandler purchaseHandler, 
 
 Opening clears the cart and connects the handler's `StateChanged` event. Closing clears the cart, hides the shop, disconnects the handler, clears all `OnPurchaseCompleted` listeners, and invokes the close callback. Subscribe to completion notifications each time you open, as shown above. To clear the cart while keeping the shop open and the handler connected, call `ClearCart()`.
 
-Pair each successful `OpenShop` call with one `CloseShop` call. Close an existing session before opening another; repeated opens with the same handler currently add duplicate state-change subscriptions, and closing without a registered handler is not supported.
+Repeated opens with the same handler do not add duplicate state-change subscriptions, but still rebuild the shop and clear the cart. Close the current session before opening with a different live handler. Closing before opening or closing repeatedly is safe.
+
+Disabling the shop component or its GameObject also disconnects the purchase handler through `OnDisable`. Re-enabling alone does not reconnect it; call `OpenShop` to connect a handler again. Use `CloseShop` when you also need the cart cleared, completion listeners removed, and the close callback invoked.
 
 ## Connect your inventory and currency systems
 

@@ -17,7 +17,7 @@ This folder contains the item-data interface and slot data helper used by the sh
 
 The integrating inventory system is responsible for checking available space, distributing purchased quantities across stacks, and adding the items after a successful purchase. `PlayerDebug` only simulates purchase checks and logs the result; it does not implement an inventory or wallet.
 
-Implement `IPurchaseHandler` with `CanPurchaseMoney(int price)`, `CanPurchaseInventorySlots(inventorySlotData[] cartItems)`, `TryPurchase(inventorySlotData[] items, int totalPrice)`, and an `Action StateChanged` event. Pass it to `ShopManager.OpenShop(items, handler, optionalCloseCallback)`. Registration is private to the manager; `CloseShop()` disconnects the handler. Close the current shop session before opening another.
+Implement `IPurchaseHandler` with `CanPurchaseMoney(int price)`, `CanPurchaseInventorySlots(inventorySlotData[] cartItems)`, `TryPurchase(inventorySlotData[] items, int totalPrice)`, and an `Action StateChanged` event. Pass it to `ShopManager.OpenShop(items, handler, optionalCloseCallback)`. Registration is private to the manager; `CloseShop()` and `OnDisable` disconnect the handler. Repeated opens with the same handler do not duplicate subscriptions. Close the current shop session before opening with a different live handler. Re-enabling alone does not reconnect the handler; call `OpenShop` again.
 
 Raise `StateChanged` when funds or inventory capacity change. The manager subscribes while the shop is open and calls both condition checks to refresh its purchase messages. Checkout also calls both checks before attempting the transaction.
 

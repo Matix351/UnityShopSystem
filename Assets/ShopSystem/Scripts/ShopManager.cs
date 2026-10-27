@@ -37,32 +37,28 @@ public class ShopManager : MonoBehaviour
     {
         if (handler == null)
             throw new ArgumentNullException(nameof(handler));
-        if (_purchaseHandler != null && !ReferenceEquals(_purchaseHandler, handler)
+        if (ReferenceEquals(_purchaseHandler, handler))
+            return;
+        if (_purchaseHandler != null
             && !(_purchaseHandler is UnityEngine.Object owner && owner == null))
             throw new InvalidOperationException("The shop already has a purchase handler.");
         _purchaseHandler = handler;
         _purchaseHandler.StateChanged += UpdatePlayerPurchaseConditions;
     }
 
-    private void unregisterPurchaseHandler(IPurchaseHandler handler= null)
+    private void unregisterPurchaseHandler()
     {
-        if(handler == null)
-        {
-            _purchaseHandler.StateChanged -= UpdatePlayerPurchaseConditions;
-            _purchaseHandler = null;
+        if (_purchaseHandler == null)
             return;
 
-        }
-        else if (ReferenceEquals(_purchaseHandler, handler))
-
-        {
-            _purchaseHandler.StateChanged -= UpdatePlayerPurchaseConditions;
-            _purchaseHandler = null;
-
-        }
+        _purchaseHandler.StateChanged -= UpdatePlayerPurchaseConditions;
+        _purchaseHandler = null;
     }
 
-
+    private void OnDisable()
+    {
+        unregisterPurchaseHandler();
+    }
 
     UnityAction _onShopCloseAction = null;
     private bool _canPlayerPurchase = false;
@@ -144,9 +140,8 @@ public class ShopManager : MonoBehaviour
     public void CloseShop()
     {
         ClearCart();
-        this.gameObject.SetActive(false);
-
         unregisterPurchaseHandler();
+        this.gameObject.SetActive(false);
         UnityAction onShopClosed = _onShopCloseAction;
         _onShopCloseAction = null;
         OnPurchaseCompleted = null;
