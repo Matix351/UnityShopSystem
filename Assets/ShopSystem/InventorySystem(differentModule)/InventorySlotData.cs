@@ -81,8 +81,9 @@ public class inventorySlotData
     public void ChangeAmmount(int newAmmount)
     {
         _ammount = newAmmount;
-        if (newAmmount == 0)
+        if (newAmmount <= 0)
         {
+            _ammount = 0;
             _item = null;
 
         }
