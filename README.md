@@ -50,7 +50,7 @@ The demo simulates funds and inventory capacity. A complete wallet, inventory ma
 - Unity UI (uGUI) and TextMesh Pro for the interface.
 - The sample project uses Universal Render Pipeline (URP).
 
-Open the full project to restore its package dependencies from [`Packages/manifest.json`](Packages/manifest.json). The current shop source also imports `Unity.VisualScripting`, so keep that package installed when using the source as-is. Other Unity versions and render pipelines have not been verified here.
+Open the full project to restore its package dependencies from [`Packages/manifest.json`](Packages/manifest.json). Other Unity versions and render pipelines have not been verified here.
 
 ## Run the demo
 
