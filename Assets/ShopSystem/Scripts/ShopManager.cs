@@ -40,7 +40,8 @@ public class ShopManager : MonoBehaviour
         if (ReferenceEquals(_purchaseHandler, handler))
             return;
         if (_purchaseHandler != null
-            && !(_purchaseHandler is UnityEngine.Object owner && owner == null))
+            && !(_purchaseHandler is UnityEngine.Object owner 
+            && owner == null))
             throw new InvalidOperationException("The shop already has a purchase handler.");
         _purchaseHandler = handler;
         _purchaseHandler.StateChanged += UpdatePlayerPurchaseConditions;
@@ -57,7 +58,7 @@ public class ShopManager : MonoBehaviour
 
     private void OnDisable()
     {
-        unregisterPurchaseHandler();
+        CloseShop();
     }
 
     UnityAction _onShopCloseAction = null;
@@ -67,6 +68,11 @@ public class ShopManager : MonoBehaviour
 
     public void OpenShop(IItemData[] items,IPurchaseHandler purchaseHandler, UnityAction onShopClosedAction = null)
     {
+        if(this.gameObject.activeSelf)
+        {
+            return;
+        }
+
         Debug.Log("MATI: ShopManager go");
         for(int i=0; i<items.Length; i++)
         {

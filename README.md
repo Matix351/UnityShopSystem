@@ -58,7 +58,7 @@ Open the full project to restore its package dependencies from [`Packages/manife
 2. In Unity Hub, add the repository folder as an existing project.
 3. Open it with Unity 6000.3.11f1 and let the initial import finish.
 4. Open [`ShopSystemSampleScene.unity`](Assets/ShopSystem/Scenes/ShopSystemSampleScene.unity) for the original UI or [`ShopSystemIllustratedCream.unity`](Assets/ShopSystem/Scenes/ShopSystemIllustratedCream.unity) for the illustrated UI.
-5. Ensure `ShopDebug` has its shop manager, item list, and `Player` (`PlayerDebug`) reference assigned, then enter Play Mode and click **OpenShop**.
+5. Ensure `ShopExample` has its shop manager and item list assigned, and `OpenShopButtonDebug` references that `ShopExample` and the demo `PlayerDebug`. Enter Play Mode and click **OpenShop**.
 6. Use the player debug switches to simulate sufficient money and inventory space.
 7. Add items, change quantities, filter categories, and purchase the cart. Successful demo purchases are logged to the Console.
 
@@ -74,7 +74,8 @@ Open the full project to restore its package dependencies from [`Packages/manife
 | `Sprites/` | Shared sample item icons. |
 | `Sprites/IllustratedCream/` | Illustrated shop backgrounds, panels, buttons, and decorative artwork. |
 | `InventorySystem(differentModule)/` | `IItemData` interface and `inventorySlotData` helpers from a separate inventory module. |
-| `ShopDebug.cs` | Opens the demo shop with its assigned item list and player purchase handler. |
+| `ShopExample.cs` | Holds the shop manager and item list, and opens the shop with a supplied purchase handler. |
+| `OpenShopButtonDebug.cs` | Connects the demo OpenShop button to `ShopExample`, supplying its assigned `PlayerDebug` as the purchase handler. |
 | `PlayerDebug.cs` | Simulates player purchase conditions and handles debug purchases. |
 | `PlayerDebugToggleBindings.cs` | Connects the debug switches to player state. |
 
@@ -82,7 +83,7 @@ Open the full project to restore its package dependencies from [`Packages/manife
 
 1. In the Project window, choose **Create → Scriptable Objects → Inventory → ShopItem**.
 2. Set its name, sprite, price (`Value`), category (`Type`), and maximum stack amount.
-3. Add the asset to the `ShopDebug` item list or pass it to `ShopManager.OpenShop` from your own code.
+3. Add the asset to the `ShopExample` item list or pass it to `ShopManager.OpenShop` from your own code.
 
 <p align="center">
   <img src="docs/screenshots/item-asset-inspector.png" alt="Apple ScriptableObject in the Unity Inspector with its name, icon, maximum stack amount, value, and Food category" width="634" />
@@ -98,7 +99,7 @@ Open the full project to restore its package dependencies from [`Packages/manife
 
 [`SOShopItemExample`](Assets/ShopSystem/ScriptableObjects/SOShopItemExample.cs) extends `ScriptableObject` and implements:
 
-- `IItemData`: supplies `Name`, `image`, and `maxStackAmmount`.
+- `IItemData`: supplies `Name`, `Image`, and `MaxStackAmmount`.
 - `IItemTradeable`: supplies the integer price through `Value`.
 - `IItemType`: supplies the category through `Type`.
 
@@ -120,6 +121,7 @@ public class OpenShopExample : MonoBehaviour
     public void Open()
     {
         shop.OpenShop(items, player, () => Debug.Log("Shop closed"));
+        shop.OnPurchaseCompleted -= handlePurchaseCompleted;
         shop.OnPurchaseCompleted += handlePurchaseCompleted;
     }
 
@@ -139,9 +141,9 @@ The signature is `OpenShop(IItemData[] items, IPurchaseHandler purchaseHandler, 
 
 Opening clears the cart and connects the handler's `StateChanged` event. Closing clears the cart, hides the shop, disconnects the handler, clears all `OnPurchaseCompleted` listeners, and invokes the close callback. Subscribe to completion notifications each time you open, as shown above. To clear the cart while keeping the shop open and the handler connected, call `ClearCart()`.
 
-Repeated opens with the same handler do not add duplicate state-change subscriptions, but still rebuild the shop and clear the cart. Close the current session before opening with a different live handler. Closing before opening or closing repeatedly is safe.
+Repeated opens with the same handler do not add duplicate state-change subscriptions, but still rebuild the shop and clear the cart. Completion listeners remain registered until the shop closes; the example removes its listener before adding it so repeated opens do not duplicate notifications. Close the current session before opening with a different live handler. With the required Inspector references assigned, closing before opening or closing repeatedly is safe.
 
-Disabling the shop component or its GameObject also disconnects the purchase handler through `OnDisable`. Re-enabling alone does not reconnect it; call `OpenShop` to connect a handler again. Use `CloseShop` when you also need the cart cleared, completion listeners removed, and the close callback invoked.
+Disabling the shop component or its GameObject calls `CloseShop` through `OnDisable`. This clears the cart, disconnects the purchase handler, deactivates the shop GameObject, clears completion listeners, and invokes the pending close callback. Re-enabling alone does not restore the session; call `OpenShop` to connect a handler again. If you disabled the component itself, re-enable it before reopening.
 
 ## Connect your inventory and currency systems
 
@@ -166,15 +168,17 @@ Both condition checks must pass. They run when cart data or handler state change
 Handler registration and removal are private implementation details of `ShopManager`. Pass the handler to `OpenShop` and let `CloseShop` disconnect it.
 Empty carts and checkout without a valid handler are rejected. A failed purchase retains the cart; a successful purchase clears it and raises `OnPurchaseCompleted(inventorySlotData[] items, int totalPrice)`. This optional event is for UI, quests, or logging after the transaction, not for deducting money or granting items again.
 
-The provided `PlayerDebug` simulates the two conditions, raises `StateChanged` from its debug setters, and logs successful purchases inside `TryPurchase`. It does not implement an inventory or wallet, and `ShopDebug` passes it to the manager when opening the shop.
+The provided `PlayerDebug` simulates the two conditions, raises `StateChanged` from its debug setters, and logs successful purchases inside `TryPurchase`. It does not implement an inventory or wallet. In the demo, `OpenShopButtonDebug` passes it to `ShopExample`, which opens the manager with its item list and that handler.
 
 ## Cart limits versus inventory stacks
 
 **Max Quantity Per Item** on `ShopManager` limits the quantity of each item in the cart. The default serialized value is 999. Keep it positive.
 
-`IItemData.maxStackAmmount` describes how many items fit in one inventory stack. The sample items use 64 for Other/Food and 1 for Weapons/Tools. A cart row may represent multiple inventory stacks: purchasing three swords requires three slots.
+`IItemData.MaxStackAmmount` describes how many items fit in one inventory stack. The sample items use 64 for Other/Food and 1 for Weapons/Tools. A cart row may represent multiple inventory stacks: purchasing three swords requires three slots.
 
 Purchase callbacks receive one `inventorySlotData` entry per cart item: `item` exposes its `IItemData` reference and `ammount` holds its total requested quantity. Your inventory implementation must distribute that quantity across stacks and check available capacity. See the [inventory module documentation](Assets/ShopSystem/InventorySystem%28differentModule%29/readMe.md) for the data helpers and their limitations.
+
+Prices, quantities, and the cart total use `int`, whose maximum is 2,147,483,647. `ShopItem` rejects negative prices and counts, and throws if unit price multiplied by quantity exceeds that range. Cart-total addition and quantity addition do not have equivalent overflow checks, and quantity addition occurs before the cart limit is applied. Keep inputs and combined totals within range; the quantity cap alone does not protect every calculation from overflow.
 
 ## Use in an existing project
 

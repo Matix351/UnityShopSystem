@@ -6,7 +6,7 @@ This folder contains the item-data interface and slot data helper used by the sh
 
 | Class | Purpose |
 | --- | --- |
-| `IItemData` | Interface exposing an item's `Name`, `image`, and `maxStackAmmount`. |
+| `IItemData` | Interface exposing an item's `Name`, `Image`, and `MaxStackAmmount`. |
 | `inventorySlotData` | Holds an item reference and quantity. Provides methods for adding, removing, replacing, and clearing slot data. |
 
 `SOShopItemExample` extends `ScriptableObject` elsewhere in the shop module and implements `IItemData`, `IItemTradeable`, and `IItemType`. Custom items can implement these interfaces without inheriting from a shared item base class.
@@ -17,17 +17,17 @@ This folder contains the item-data interface and slot data helper used by the sh
 
 The integrating inventory system is responsible for checking available space, distributing purchased quantities across stacks, and adding the items after a successful purchase. `PlayerDebug` only simulates purchase checks and logs the result; it does not implement an inventory or wallet.
 
-Implement `IPurchaseHandler` with `CanPurchaseMoney(int price)`, `CanPurchaseInventorySlots(inventorySlotData[] cartItems)`, `TryPurchase(inventorySlotData[] items, int totalPrice)`, and an `Action StateChanged` event. Pass it to `ShopManager.OpenShop(items, handler, optionalCloseCallback)`. Registration is private to the manager; `CloseShop()` and `OnDisable` disconnect the handler. Repeated opens with the same handler do not duplicate subscriptions. Close the current shop session before opening with a different live handler. Re-enabling alone does not reconnect the handler; call `OpenShop` again.
+Implement `IPurchaseHandler` with `CanPurchaseMoney(int price)`, `CanPurchaseInventorySlots(inventorySlotData[] cartItems)`, `TryPurchase(inventorySlotData[] items, int totalPrice)`, and an `Action StateChanged` event. Pass it to `ShopManager.OpenShop(items, handler, optionalCloseCallback)`. Registration is private to the manager. `CloseShop()` clears the cart, disconnects the handler, deactivates the shop GameObject, clears completion listeners, and invokes the pending close callback. `OnDisable` calls `CloseShop()`, so disabling the shop also performs that cleanup. Repeated opens with the same handler do not duplicate state-change subscriptions. Close the current shop session before opening with a different live handler. Re-enabling alone does not reconnect the handler; call `OpenShop` again, and re-enable the component first if you disabled it directly.
 
 Raise `StateChanged` when funds or inventory capacity change. The manager subscribes while the shop is open and calls both condition checks to refresh its purchase messages. Checkout also calls both checks before attempting the transaction.
 
 The handler must recheck current funds and capacity and commit money and inventory changes together. Returning `false` must leave both unchanged. The shop keeps the cart on failure and clears it on success. With no handler, checkout is refused.
 
-Subscribe to `OnPurchaseCompleted` for UI, sound, quests, or logging. This notification runs after a successful transaction and cart reset; listeners do not approve or perform the purchase. Closing the shop clears these listeners, so subscribe again for each new session. `ShopDebug` passes its assigned `PlayerDebug` to `OpenShop`; the demo handler logs a successful purchase inside `TryPurchase`.
+Subscribe to `OnPurchaseCompleted` for UI, sound, quests, or logging. This notification runs after a successful transaction and cart reset; listeners do not approve or perform the purchase. Closing the shop clears these listeners, so subscribe again for each new session. Reopening without closing preserves completion listeners; avoid registering the same listener twice. In the demo, `OpenShopButtonDebug` passes its assigned `PlayerDebug` through `ShopExample` to `ShopManager.OpenShop`; the demo handler logs a successful purchase inside `TryPurchase`.
 
 ## Stack sizes and cart quantities
 
-- `IItemData.maxStackAmmount` limits how many items fit in one inventory stack. The sample assets use 64 for Other and Food, and 1 for Weapons and Tools.
+- `IItemData.MaxStackAmmount` limits how many items fit in one inventory stack. The sample assets use 64 for Other and Food, and 1 for Weapons and Tools.
 - `ShopManager.GetMaxQuantityPerItem` exposes the separate limit on the quantity of each item in the cart. Its serialized setting defaults to 999.
 
 For example, buying 70 apples with a stack size of 64 requires two stacks when no existing stack has available space. Buying three swords with a stack size of 1 requires three slots.
@@ -39,5 +39,5 @@ For example, buying 70 apples with a stack size of 64 requires two stacks when n
 - `ClearData()` clears both the item reference and quantity.
 - Constructors, `ChangeData(...)`, and `ChangeAmmount(...)` assign quantities without enforcing stack limits. Callers must validate their input; `ChangeAmmount(0)` also clears the item reference.
 
-These classes are data helpers, not a complete inventory manager. Existing API spellings such as `ammount` and `maxStackAmmount` are preserved here to match the code.
+These classes are data helpers, not a complete inventory manager. Existing API spellings such as `ammount` and `MaxStackAmmount` are preserved here to match the code.
 
