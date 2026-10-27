@@ -58,7 +58,7 @@ Open the full project to restore its package dependencies from [`Packages/manife
 2. In Unity Hub, add the repository folder as an existing project.
 3. Open it with Unity 6000.3.11f1 and let the initial import finish.
 4. Open [`ShopSystemSampleScene.unity`](Assets/ShopSystem/Scenes/ShopSystemSampleScene.unity) for the original UI or [`ShopSystemIllustratedCream.unity`](Assets/ShopSystem/Scenes/ShopSystemIllustratedCream.unity) for the illustrated UI.
-5. Ensure `ShopExample` has its shop manager and item list assigned, and `OpenShopButtonDebug` references that `ShopExample` and the demo `PlayerDebug`. Enter Play Mode and click **OpenShop**.
+5. Ensure `ShopExample` has its shop manager and item list assigned, and `OpenShopButtonDebug` references that `ShopExample` and the demo `PlayerDebug`. Keep the GameObject containing `ShopManager` inactive initially, with the component itself enabled. Enter Play Mode and click **OpenShop**.
 6. Use the player debug switches to simulate sufficient money and inventory space.
 7. Add items, change quantities, filter categories, and purchase the cart. Successful demo purchases are logged to the Console.
 
@@ -109,6 +109,8 @@ Custom item classes must implement [`IItemData`](Assets/ShopSystem/InventorySyst
 
 Pass the items and an `IPurchaseHandler` each time you open the shop. The optional close callback can restore player controls or other UI state. Assign the shop manager, sample item assets, and demo player in the Inspector:
 
+Start with the GameObject containing `ShopManager` inactive. `OpenShop` returns immediately if that GameObject's `activeSelf` is already `true`; otherwise it initializes the shop and activates it. Keep the opening button or interaction component outside that inactive GameObject so it can open the shop.
+
 ```csharp
 using UnityEngine;
 
@@ -120,8 +122,10 @@ public class OpenShopExample : MonoBehaviour
 
     public void Open()
     {
+        if (shop.gameObject.activeSelf)
+            return;
+
         shop.OpenShop(items, player, () => Debug.Log("Shop closed"));
-        shop.OnPurchaseCompleted -= handlePurchaseCompleted;
         shop.OnPurchaseCompleted += handlePurchaseCompleted;
     }
 
@@ -139,11 +143,11 @@ public class OpenShopExample : MonoBehaviour
 
 The signature is `OpenShop(IItemData[] items, IPurchaseHandler purchaseHandler, UnityAction onShopClosedAction = null)`. It accepts custom item implementations created at runtime; the concrete ScriptableObject array in this example allows sample assets to be assigned in the Inspector. Replace `PlayerDebug` with your own component implementing `IPurchaseHandler` for a real integration.
 
-Opening clears the cart and connects the handler's `StateChanged` event. Closing clears the cart, hides the shop, disconnects the handler, clears all `OnPurchaseCompleted` listeners, and invokes the close callback. Subscribe to completion notifications each time you open, as shown above. To clear the cart while keeping the shop open and the handler connected, call `ClearCart()`.
+Opening an inactive shop clears the cart, rebuilds the item and category views, connects the handler's `StateChanged` event, and activates the shop GameObject. Closing clears the cart, hides the shop, disconnects the handler, clears all `OnPurchaseCompleted` listeners, and invokes the close callback. Subscribe to completion notifications each time you open a new session, as shown above. To clear the cart while keeping the shop open and the handler connected, call `ClearCart()`.
 
-Repeated opens with the same handler do not add duplicate state-change subscriptions, but still rebuild the shop and clear the cart. Completion listeners remain registered until the shop closes; the example removes its listener before adding it so repeated opens do not duplicate notifications. Close the current session before opening with a different live handler. With the required Inspector references assigned, closing before opening or closing repeatedly is safe.
+Calls to `OpenShop` while the shop GameObject is active are ignored, including calls with different items, a different handler, or a different close callback. The current cart, views, handler, and callbacks stay in place. To replace the item list or handler, call `CloseShop()` and then `OpenShop(...)`. The example checks the same active state before subscribing so repeated button clicks do not add duplicate completion listeners. With the required Inspector references assigned, closing before opening or closing repeatedly is safe.
 
-Disabling the shop component or its GameObject calls `CloseShop` through `OnDisable`. This clears the cart, disconnects the purchase handler, deactivates the shop GameObject, clears completion listeners, and invokes the pending close callback. Re-enabling alone does not restore the session; call `OpenShop` to connect a handler again. If you disabled the component itself, re-enable it before reopening.
+Disabling the shop component or its GameObject calls `CloseShop` through `OnDisable`. This clears the cart, disconnects the purchase handler, deactivates the shop GameObject, clears completion listeners, and invokes the pending close callback. To reopen, leave the shop GameObject inactive and call `OpenShop`; manually activating it first causes the open call to be ignored. If you disabled the component itself, re-enable the component before reopening. Ensure the containing Canvas and other parent GameObjects are active when displaying the shop.
 
 ## Connect your inventory and currency systems
 
@@ -184,7 +188,7 @@ Prices, quantities, and the cart total use `int`, whose maximum is 2,147,483,647
 
 Start by running the included demo, then copy `Assets/ShopSystem` with its `.meta` files into your project. Ensure the UI, TextMesh Pro, and current source dependencies are available, and bring over any fonts or other assets referenced by the prefabs.
 
-Use the sample scene as a wiring reference: the shop needs its view prefabs, content transforms, and text fields assigned. Add the shop UI to a Canvas with a working EventSystem, open it with your item list and purchase handler. If your project already defines equivalent inventory data types, adapt these references before combining the modules to avoid duplicate class names.
+Use the sample scene as a wiring reference: the shop needs its view prefabs, content transforms, and text fields assigned. Add the shop UI to an active Canvas with a working EventSystem. Keep the shop GameObject inactive initially and call `OpenShop` with your item list and purchase handler to initialize and show it. Place the opening button or interaction script on a separate active GameObject. If your project already defines equivalent inventory data types, adapt these references before combining the modules to avoid duplicate class names.
 
 
 ## License
